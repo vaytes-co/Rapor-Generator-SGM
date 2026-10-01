@@ -1,9 +1,15 @@
-# Rapor Generator — Position Fix
+# Rapor Generator — Default Settings Update
 
-Versi ini mempertahankan template, mapping Excel, ABeeZee, preview, foto, dan generator sebelumnya.
+Updated default settings for biodata and signature pages based on the requested template-specific values.
 
-Perbaikan terbaru:
-- Biodata Glow tetap ditulis di baris orange, hanya diturunkan sedikit agar lebih center.
-- Nama Guru Kelas ditempatkan di bawah label "Guru Kelas" dengan ruang untuk tanda tangan.
-- Nama Pimpinan ditempatkan di bawah label "Pimpinan" dengan ruang untuk tanda tangan.
-- Tanggal menggunakan ABeeZee regular/bold style yang sama dengan teks tanggal pada template.
+## Biodata defaults
+- Glow Lower: X 0, Y 0, Font 12
+- Glow Middle: X 0, Y 5, Font 12
+- Glow Upper: X 0, Y 5, Font 12
+- Sunny: X 0, Y 5, Font 12
+- Infant: X 0, Y 5, Font 12
+
+## Signature defaults
+Each template/page now has its own default date, teacher, principal, and digital signature box coordinates.
+
+The localStorage keys were versioned so the new defaults are applied instead of older saved defaults from previous versions. After the user changes a setting, it remains saved normally.

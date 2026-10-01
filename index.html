@@ -4,28 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Rapor Generator — membuat rapor PDF dari Excel dan foto siswa langsung di browser.">
-<link rel="icon" type="image/png" href="assets/img/logo/Logo-Vaytes.png">
-<title>Rapor Generator SGM</title>
+<title>Rapor Generator</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="topbar">
-  <div class="topbar-inner">
-    <div class="brand">
-      <div class="brand-logo">
-        <img src="assets/img/logo/BLC LOGOS.png" width="50px" alt="Logo Rapor Generator">
-      </div>
-      <div>
-        <h1>Rapor Generator</h1>
-        <p>Excel → rapor PDF, langsung di browser</p>
-      </div>
-    </div>
-    <div class="online"><i></i> Data diproses lokal di perangkat</div>
+<div class="app-splash" id="appSplash" aria-hidden="true">
+  <div class="splash-glow"></div>
+  <div class="splash-particles" aria-hidden="true"></div>
+  <div class="splash-content">
+    <div class="splash-logo-wrap"><img src="assets/img/logo/BLC LOGOS.png" alt="Bumblebee Learning Center"></div>
+    <div class="splash-kicker">VAYTES.CO · BUMBLEBEE LEARNING CENTER</div>
+    <h2>Rapor Generator</h2>
+    <p>Menyiapkan ruang kerja rapor…</p>
+    <div class="splash-loader"><i></i></div>
   </div>
-</header>
+</div>
+<header class="topbar"><div class="topbar-inner"><div class="brand"><div class="brand-mark">RG</div><div><h1>Rapor Generator</h1><p>Excel → rapor PDF, langsung di browser</p></div></div><div class="online"><i></i> Data diproses lokal di perangkat</div></div></header>
 <main class="shell">
 <section class="hero">
-  <div class="hero-card"><span class="eyebrow">RAPOR GENERATOR SGM</span><h2>Dari Excel jadi <span>rapor siap cetak.</span></h2><p>Upload rekapan nilai, masukkan foto siswa, atur tanggal dan informasi rapor, lalu generate semua siswa sekaligus.</p></div>
+  <div class="hero-card"><span class="eyebrow">⚡ RAPOR OTOMATIS</span><h2>Dari Excel jadi <span>rapor siap cetak.</span></h2><p>Upload rekapan nilai, masukkan foto siswa, atur tanggal dan informasi rapor, lalu generate semua siswa sekaligus. Tidak ada server dan tidak ada database.</p></div>
   <div class="hero-card hero-side"><strong>Alur kerja</strong><div class="flow" style="margin-top:13px"><div class="flow-row"><span class="flow-num">1</span>Pilih jenis rapor</div><div class="flow-row"><span class="flow-num">2</span>Upload Excel + foto</div><div class="flow-row"><span class="flow-num">3</span>Atur tanggal & informasi</div><div class="flow-row"><span class="flow-num">4</span>Preview lalu generate PDF</div></div></div>
 </section>
 <section class="layout">
@@ -34,8 +31,8 @@
     <div class="panel-body">
       <div class="type-grid">
         <button class="type-card active" data-type="glow"><span class="check">✓</span><b>Glow</b><small>Lower · Middle · Upper</small></button>
-        <button class="type-card" data-type="sunny"><span class="check">✓</span><b>Sunny</b><small>RAPOT SUNNY</small></button>
-        <button class="type-card" data-type="infant"><span class="check">✓</span><b>Infant</b><small>RAPOT INFANT</small></button>
+        <button class="type-card" data-type="sunny"><span class="check">✓</span><b>Sunny</b><small>Sheet RAPOT SUNNY</small></button>
+        <button class="type-card" data-type="infant"><span class="check">✓</span><b>Infant</b><small>Template + Excel Infant</small></button>
       </div>
       <div class="subtypes show" id="glowLevels"><div class="sub-label">LEVEL GLOW</div><div class="seg"><button class="active" data-level="lower">Lower</button><button data-level="middle">Middle</button><button data-level="upper">Upper</button></div></div>
       <div class="drop" id="excelDrop"><div class="drop-icon">📄</div><b>Upload file Excel</b><p>Glow / Sunny / Infant: sistem mencocokkan sheet berdasarkan header Excel yang sesuai template.</p><button class="btn btn-secondary" id="excelBtn">Pilih Excel</button><input id="excelInput" type="file" accept=".xlsx,.xls,.xlsm" hidden></div>
@@ -43,10 +40,32 @@
       <div class="drop" id="photoDrop"><div class="drop-icon">🖼️</div><b>Upload foto siswa</b><p>Bisa upload banyak foto sekaligus, atau gunakan 📷 di samping nama siswa untuk upload satu per satu.</p><button class="btn btn-secondary" id="photoBtn">Pilih Folder Foto</button><input id="photoInput" type="file" accept="image/*" webkitdirectory directory multiple hidden></div>
       <div class="file-info" id="photoInfo">Belum ada foto.</div>
       <div class="note"><b>Foto otomatis:</b> sistem mencocokkan nama siswa dengan nama file foto. Jika tidak cocok, pilih siswa lalu gunakan tombol foto manual.</div>
-      <div class="settings">
+<div class="settings">
         <div class="two"><div class="field"><label>KOTA / CABANG</label><input id="city" value="Purwokerto" placeholder="Contoh: Purwokerto"></div><div class="field"><label>TANGGAL RAPOR</label><input id="reportDate" type="date"></div></div>
-        <div class="two"><div class="field"><label>PERIODE / TAHUN AJARAN</label><input id="period" value="" placeholder="Contoh: III / 2025 - 2026"></div><div class="field"><label>KELAS</label><input id="className" value="GLOW CLASS" placeholder="Nama kelas"></div></div>
+        <div class="two"><div class="field"><label>PERIODE / TAHUN AJARAN</label><input id="period" value="III / 2025 - 2026" placeholder="Contoh: III / 2025 - 2026"></div><div class="field"><label>KELAS</label><input id="className" value="GLOW CLASS" placeholder="Nama kelas"></div></div>
         <div class="two"><div class="field"><label>GURU KELAS (OPSIONAL)</label><input id="teacher" placeholder="Kosong = ambil dari Excel"></div><div class="field"><label>PIMPINAN</label><input id="principal" value="Michelle Juwono" placeholder="Nama pimpinan"></div></div>
+      </div>
+
+      <div class="page-settings" id="pageSettings">
+        <div class="page-settings-head">
+          <div><b>Pengaturan posisi per halaman</b><small>Setiap template mengikuti jumlah halaman aslinya.</small></div>
+        </div>
+
+        <div class="page-setting-card biodata-setting-card">
+          <div class="page-setting-title"><div><b>Halaman 1 — Biodata</b><span>Semua field biodata digeser sekaligus.</span></div><button type="button" class="btn btn-light btn-xs" id="resetBiodataBtn">Reset</button></div>
+          <div id="biodataEditor"></div>
+          <div class="page-setting-hint">Geser X/Y berlaku ke seluruh biodata: nama, jenis kelamin, tempat lahir, tanggal lahir, orang tua, pekerjaan, alamat, dan nomor telepon.</div>
+        </div>
+
+        <div class="page-setting-card signature-settings" id="signatureSettings">
+          <div class="page-setting-title">
+            <div><b>Halaman tanda tangan</b><span>Pilih halaman yang ingin diatur.</span></div>
+            <button type="button" class="btn btn-light btn-xs" id="resetSignatureBtn">Reset halaman</button>
+          </div>
+          <div class="signature-page-row"><label for="signaturePageSelect">Halaman</label><select id="signaturePageSelect"></select></div>
+          <div class="signature-editor" id="signatureEditor"></div>
+          <div class="signature-hint">Posisi X/Y dan gaya tanggal, nama guru, serta nama pimpinan disimpan terpisah untuk setiap halaman.</div>
+        </div>
       </div>
       <div id="message" class="notice"></div>
       <div class="actions"><button class="btn btn-primary" id="generateBtn" disabled>Generate Semua Rapor</button><button class="btn btn-light" id="resetBtn">Reset</button></div>
@@ -65,11 +84,66 @@
   </section>
 </section>
 </main>
+<div class="template-modal" id="templateModal" aria-hidden="true">
+  <div class="template-backdrop" data-template-cancel></div>
+  <div class="template-dialog" role="dialog" aria-modal="true" aria-labelledby="templateModalTitle">
+    <div class="template-icon">!</div>
+    <div class="template-content">
+      <div class="template-badge">FORMAT EXCEL TIDAK SESUAI</div>
+      <h3 id="templateModalTitle">Dokumen belum cocok dengan pilihan rapor</h3>
+      <p id="templateModalText">File yang kamu upload terdeteksi menggunakan format rapor lain.</p>
+      <div class="template-compare">
+        <div><small>PILIHAN SAAT INI</small><b id="templateExpected">-</b></div>
+        <span>↔</span>
+        <div><small>TERDETEKSI DI FILE</small><b id="templateDetected">-</b></div>
+      </div>
+      <p class="template-hint">Silakan pilih file Excel yang sesuai sebelum melanjutkan agar data tidak salah masuk ke template.</p>
+      <div class="template-actions"><button type="button" class="btn btn-primary" id="templateOkBtn">Mengerti, pilih ulang</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="leave-modal" id="leaveModal" aria-hidden="true">
+  <div class="leave-backdrop" data-leave-cancel></div>
+  <div class="leave-dialog" role="dialog" aria-modal="true" aria-labelledby="leaveTitle">
+    <div class="leave-icon">⚠</div>
+    <div class="leave-content">
+      <h3 id="leaveTitle">Yakin ingin meninggalkan halaman?</h3>
+      <p>Data Excel, foto siswa, dan perubahan yang sedang dikerjakan di halaman ini belum tersimpan. Kalau keluar atau me-refresh halaman, data tersebut bisa hilang.</p>
+      <div class="leave-actions">
+        <button type="button" class="btn btn-light" id="leaveCancelBtn">Tetap di halaman</button>
+        <button type="button" class="btn btn-danger" id="leaveConfirmBtn">Keluar dari halaman</button>
+      </div>
+    </div>
+  </div>
+</div>
 <footer class="footer">Rapor Generator · GitHub Pages · Tidak membutuhkan backend atau database</footer>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js'"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js'"></script>
 <script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js'"></script>
 <script src="vendor/jszip.min.js"></script>
 <script src="app.js"></script>
+<script>
+(() => {
+  const splash=document.getElementById('appSplash');
+  if(!splash) return;
+  const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const particles=splash.querySelector('.splash-particles');
+  if(particles && !reduce){
+    for(let i=0;i<22;i++){
+      const dot=document.createElement('i');
+      dot.style.setProperty('--x',`${Math.random()*100}%`);
+      dot.style.setProperty('--d',`${2.5+Math.random()*3.5}s`);
+      dot.style.setProperty('--delay',`${Math.random()*1.8}s`);
+      dot.style.setProperty('--s',`${2+Math.random()*5}px`);
+      particles.appendChild(dot);
+    }
+  }
+  const hide=()=>{
+    setTimeout(()=>{ splash.classList.add('hide'); setTimeout(()=>splash.remove(),700); }, reduce?250:1250);
+  };
+  if(document.readyState==='complete') hide(); else window.addEventListener('load',hide,{once:true});
+})();
+</script>
 </body>
 </html>
