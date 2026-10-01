@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Rapor Generator — membuat rapor PDF dari Excel dan foto siswa langsung di browser.">
-<title>Rapor Generator</title>
+<link rel="icon" type="image/png" href="assets/img/logo/Logo-Vaytes.png">
+<title>Rapor Generator SGM</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -25,8 +26,7 @@
       <div class="brand-logo">
         <img src="assets/img/logo/BLC LOGOS.png" width="50px" alt="Logo Rapor Generator">
       </div>
-      <div>
-        <h1>Rapor Generator</h1>
+      <div><h1>Rapor Generator</h1>
         <p>Excel → rapor PDF, langsung di browser</p>
       </div>
     </div>
@@ -36,7 +36,7 @@
 <main class="shell">
 <section class="hero">
   <div class="hero-card hero-main">
-    <div class="ambient-bee" aria-hidden="true">🐝</div><span class="eyebrow"><i class="eyebrow-dot"></i> RAPOR OTOMATIS</span><h2>Dari Excel jadi <span>rapor siap cetak.</span></h2><p>Upload rekapan nilai, masukkan foto siswa, atur tanggal dan informasi rapor, lalu generate semua siswa sekaligus.</p></div>
+    <div class="ambient-bee" aria-hidden="true">🐝</div><span class="eyebrow"><i class="eyebrow-dot"></i> RAPOR OTOMATIS</span><h2>Dari Excel jadi <span>rapor siap cetak.</span></h2><p>Upload rekapan nilai, masukkan foto siswa, atur tanggal dan informasi rapor, lalu generate semua siswa sekaligus. Tidak ada server dan tidak ada database.</p></div>
   <div class="hero-card hero-side"><div class="hero-side-head"><strong>Alur kerja</strong><span class="live-pill"><i></i> LIVE</span></div><div class="flow" style="margin-top:13px"><div class="flow-row"><span class="flow-num">1</span>Pilih jenis rapor</div><div class="flow-row"><span class="flow-num">2</span>Upload Excel + foto</div><div class="flow-row"><span class="flow-num">3</span>Atur tanggal & informasi</div><div class="flow-row"><span class="flow-num">4</span>Preview lalu generate PDF</div></div></div>
 </section>
 
@@ -44,8 +44,8 @@
   <div class="workspace-head">
     <div>
       <span class="workspace-kicker"><i></i> SMART REPORT WORKSPACE</span>
-      <h2>Rapor, siap pakai <span>tinggal download terus print.</span></h2>
-      <p>Dokumen template, data siswa, preview, dan hasil akhir dalam satu alur kerja.</p>
+      <h2>Rapor, siap dari <span>data sampai export.</span></h2>
+      <p>Kelola template, data siswa, preview, dan hasil akhir dalam satu alur kerja.</p>
     </div>
     <div class="workspace-badge"><span class="badge-dot"></span><b id="workspaceStatus">READY TO START</b><small>Local processing</small></div>
   </div>
@@ -63,8 +63,8 @@
     <div class="panel-body">
       <div class="type-grid">
         <button class="type-card active" data-type="glow"><span class="check">✓</span><b>Glow</b><small>Lower · Middle · Upper</small></button>
-        <button class="type-card" data-type="sunny"><span class="check">✓</span><b>Sunny</b><small>RAPOT SUNNY</small></button>
-        <button class="type-card" data-type="infant"><span class="check">✓</span><b>Infant</b><small>RAPOT INFANT</small></button>
+        <button class="type-card" data-type="sunny"><span class="check">✓</span><b>Sunny</b><small>Sheet RAPOT SUNNY</small></button>
+        <button class="type-card" data-type="infant"><span class="check">✓</span><b>Infant</b><small>Template + Excel Infant</small></button>
       </div>
       <div class="subtypes show" id="glowLevels"><div class="sub-label">LEVEL GLOW</div><div class="seg"><button class="active" data-level="lower">Lower</button><button data-level="middle">Middle</button><button data-level="upper">Upper</button></div></div>
       <div class="drop" id="excelDrop"><div class="drop-icon">📄</div><b>Upload file Excel</b><p>Glow / Sunny / Infant: sistem mencocokkan sheet berdasarkan header Excel yang sesuai template.</p><button class="btn btn-secondary" id="excelBtn">Pilih Excel</button><input id="excelInput" type="file" accept=".xlsx,.xls,.xlsm" hidden></div>
@@ -154,13 +154,13 @@
 <div class="leave-modal" id="leaveModal" aria-hidden="true">
   <div class="leave-backdrop" data-leave-cancel></div>
   <div class="leave-dialog" role="dialog" aria-modal="true" aria-labelledby="leaveTitle">
-    <div class="leave-icon">⚠</div>
+    <div class="leave-icon"><span>↗</span></div>
     <div class="leave-content">
-      <h3 id="leaveTitle">Yakin ingin meninggalkan halaman?</h3>
-      <p>Data Excel, foto siswa, dan perubahan yang sedang dikerjakan di halaman ini belum tersimpan. Kalau keluar atau me-refresh halaman, data tersebut bisa hilang.</p>
+      <h3 id="leaveTitle">Perubahan belum disimpan</h3>
+      <p>Data Excel, foto siswa, foto manual, dan pengaturan yang sedang dikerjakan belum tersimpan. Jika kamu keluar sekarang, perubahan tersebut bisa hilang.</p>
       <div class="leave-actions">
-        <button type="button" class="btn btn-light" id="leaveCancelBtn">Tetap di halaman</button>
-        <button type="button" class="btn btn-danger" id="leaveConfirmBtn">Keluar dari halaman</button>
+        <button type="button" class="btn btn-light" id="leaveCancelBtn">Tetap di sini</button>
+        <button type="button" class="btn btn-danger" id="leaveConfirmBtn">Ya, tinggalkan halaman</button>
       </div>
     </div>
   </div>
@@ -173,33 +173,72 @@
 <script src="app.js"></script>
 <script>
 (() => {
-  const splash=document.getElementById('appSplash');
-  if(!splash) return;
-  const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  const particles=splash.querySelector('.splash-particles');
-  if(particles && !reduce){
-    for(let i=0;i<22;i++){
-      const dot=document.createElement('i');
-      dot.style.setProperty('--x',`${Math.random()*100}%`);
-      dot.style.setProperty('--d',`${2.5+Math.random()*3.5}s`);
-      dot.style.setProperty('--delay',`${Math.random()*1.8}s`);
-      dot.style.setProperty('--s',`${2+Math.random()*5}px`);
+  const splash = document.getElementById('appSplash');
+  if (!splash) return;
+
+  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+  const particles = splash.querySelector('.splash-particles');
+
+  if (particles && !reduce) {
+    for (let i = 0; i < 22; i++) {
+      const dot = document.createElement('i');
+
+      dot.style.setProperty('--x', `${Math.random() * 100}%`);
+      dot.style.setProperty('--d', `${2.5 + Math.random() * 3.5}s`);
+      dot.style.setProperty('--delay', `${Math.random() * 1.8}s`);
+      dot.style.setProperty('--s', `${2 + Math.random() * 5}px`);
+
       particles.appendChild(dot);
     }
   }
-  let hidden=false;
-  const hide=()=>{
-    if(hidden) return;
-    hidden=true;
+
+  let hidden = false;
+
+  const hide = () => {
+    if (hidden) return;
+
+    hidden = true;
     splash.classList.add('hide');
-    setTimeout(()=>splash.remove(),700);
+
+    setTimeout(() => {
+      splash.remove();
+    }, 700);
   };
-  // Splash tidak boleh bergantung pada seluruh asset eksternal selesai load.
-  // Jika CDN lambat/gagal, aplikasi tetap bisa dibuka dan menampilkan pesan library.
-  const delay=reduce?250:900;
-  setTimeout(hide,delay);
-  if(document.readyState!=='complete') window.addEventListener('load',hide,{once:true});
-  else hide();
+
+  // =========================================
+  // MINIMUM SPLASH DISPLAY TIME
+  // =========================================
+
+  const minimumTime = reduce ? 2500 : 2800;
+  const startTime = Date.now();
+
+  const hideAfterMinimumTime = () => {
+    const elapsed = Date.now() - startTime;
+    const remaining = Math.max(0, minimumTime - elapsed);
+
+    setTimeout(hide, remaining);
+  };
+
+  /*
+   * Tunggu minimal 2.8 detik.
+   * Setelah itu baru splash boleh ditutup.
+   *
+   * Jadi meskipun semua asset selesai loading
+   * sangat cepat, splash tetap tampil 2.8 detik.
+   */
+
+  if (document.readyState === 'complete') {
+    hideAfterMinimumTime();
+  } else {
+    window.addEventListener('load', hideAfterMinimumTime, { once: true });
+
+    // Fallback:
+    // kalau ada asset/CDN yang gagal atau terlalu lama,
+    // splash tetap tidak akan lebih lama dari batas ini.
+    setTimeout(hideAfterMinimumTime, 5000);
+  }
+
 })();
 </script>
 

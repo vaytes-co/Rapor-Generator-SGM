@@ -261,8 +261,17 @@ function confirmLeave(){
   hideLeaveModal();
   allowUnload=true;
   hasUnsavedWork=false;
-  if(pendingNavigation){ pendingNavigation=false; history.back(); }
-  else location.reload();
+  const nav=pendingNavigation;
+  pendingNavigation=false;
+  if(nav && nav.type==='url' && nav.url){
+    location.href=nav.url;
+    return;
+  }
+  if(nav && nav.type==='back'){
+    history.back();
+    return;
+  }
+  location.reload();
 }
 
 function renderBiodataEditor(){
@@ -643,10 +652,24 @@ $('resetSignatureBtn')?.addEventListener('click',()=>{const kind=signatureUiKind
 
 $('reportDate').value=currentDate();$('excelBtn').onclick=()=>$('excelInput').click();$('photoBtn').onclick=()=>$('photoInput').click();$('excelInput').onchange=e=>{if(e.target.files[0])loadExcel(e.target.files[0]);e.target.value='';};$('photoInput').onchange=e=>{loadPhotos([...e.target.files]);e.target.value='';};$('manualPhotoBtn').onclick=()=>{if(state.selected)chooseManualPhoto(state.selected);};$('manualPhotoInput').onchange=e=>{const f=e.target.files[0];if(!f||!state.selected)return;const old=state.manualPhotos.get(state.selected.id);if(old?.url)URL.revokeObjectURL(old.url);state.manualPhotos.set(state.selected.id,{file:f,url:URL.createObjectURL(f)});markDirty();state.generated.delete(state.selected.id);$('photoInfo').textContent=`✓ Foto manual untuk ${state.selected.name}`;$('photoInfo').classList.add('ok');renderStudents();refreshPreview(state.selected);e.target.value='';};$('generateBtn').onclick=()=>generateAll(true);$('downloadZipBtn').onclick=downloadZip;$('downloadOneBtn').onclick=async()=>{if(!state.selected)return;try{const blob=state.generated.get(state.selected.id)||await generatePdf(state.selected);state.generated.set(state.selected.id,blob);saveBlob(blob,`${safeFile(state.selected.name)}.pdf`);}catch(e){showMsg(e.message||'Gagal membuat PDF.','error');}};$('resetBtn').onclick=()=>{if(hasUnsavedWork)showLeaveModal();else location.reload();};
 ['city','reportDate','period','className','teacher','principal'].forEach(id=>$(id).addEventListener('input',()=>{markDirty();state.generated.clear();$('downloadZipBtn').disabled=true;if(state.selected)refreshPreview(state.selected);}));
-// Lindungi data saat refresh / tutup tab. Browser memang hanya mengizinkan dialog native untuk beforeunload.
+// Proteksi keluar halaman.
+// Browser tetap dapat menampilkan dialog native untuk refresh/tutup tab dari UI browser.
+// Semua aksi yang bisa kita intercept dari halaman memakai modal custom di bawah.
 window.addEventListener('beforeunload',e=>{
   if(!hasUnsavedWork||allowUnload)return;
-  e.preventDefault(); e.returnValue='';
+  e.preventDefault();
+  e.returnValue='';
+});
+
+// Tangkap link internal agar tidak langsung meninggalkan workspace.
+document.addEventListener('click', e=>{
+  const link=e.target.closest('a[href]');
+  if(!link || !hasUnsavedWork || allowUnload)return;
+  const href=link.getAttribute('href') || '';
+  if(!href || href.startsWith('#') || link.target==='_blank')return;
+  e.preventDefault();
+  pendingNavigation={type:'url',url:link.href};
+  showLeaveModal();
 });
 
 // Tombol Back memakai modal custom yang lebih rapi.
@@ -654,7 +677,7 @@ try{
   history.pushState({raporGeneratorGuard:true},'',location.href);
   window.addEventListener('popstate',()=>{
     if(!hasUnsavedWork){ return; }
-    pendingNavigation=true;
+    pendingNavigation={type:'back'};
     history.pushState({raporGeneratorGuard:true},'',location.href);
     showLeaveModal();
   });
@@ -668,7 +691,7 @@ $('templateModal')?.querySelector('[data-template-cancel]')?.addEventListener('c
 $('leaveModal')?.querySelector('[data-leave-cancel]')?.addEventListener('click',()=>{pendingNavigation=false;hideLeaveModal();});
 
 document.addEventListener('keydown',e=>{
-  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='r'&&hasUnsavedWork){e.preventDefault();pendingNavigation=false;showLeaveModal();return;}
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='r'&&hasUnsavedWork){e.preventDefault();pendingNavigation={type:'reload'};showLeaveModal();return;}
   if(e.key==='Escape'&&$('leaveModal')?.classList.contains('show')){pendingNavigation=false;hideLeaveModal();}
 });
 
