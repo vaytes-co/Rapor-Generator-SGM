@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Rapor Generator — membuat rapor PDF dari Excel dan foto siswa langsung di browser.">
+<title>Rapor Generator</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><div class="brand"><div class="brand-mark">RG</div><div><h1>Rapor Generator</h1><p>Excel → rapor PDF, langsung di browser</p></div></div><div class="online"><i></i> Data diproses lokal di perangkat</div></div></header>
+<main class="shell">
+<section class="hero">
+  <div class="hero-card"><span class="eyebrow">⚡ RAPOR OTOMATIS</span><h2>Dari Excel jadi <span>rapor siap cetak.</span></h2><p>Upload rekapan nilai, masukkan foto siswa, atur tanggal dan informasi rapor, lalu generate semua siswa sekaligus. Tidak ada server dan tidak ada database.</p></div>
+  <div class="hero-card hero-side"><strong>Alur kerja</strong><div class="flow" style="margin-top:13px"><div class="flow-row"><span class="flow-num">1</span>Pilih jenis rapor</div><div class="flow-row"><span class="flow-num">2</span>Upload Excel + foto</div><div class="flow-row"><span class="flow-num">3</span>Atur tanggal & informasi</div><div class="flow-row"><span class="flow-num">4</span>Preview lalu generate PDF</div></div></div>
+</section>
+<section class="layout">
+  <aside class="panel">
+    <div class="panel-head"><h3>1. Sumber data</h3><small>Semua diproses di browser</small></div>
+    <div class="panel-body">
+      <div class="type-grid">
+        <button class="type-card active" data-type="glow"><span class="check">✓</span><b>Glow</b><small>Lower · Middle · Upper</small></button>
+        <button class="type-card" data-type="sunny"><span class="check">✓</span><b>Sunny</b><small>Sheet RAPOT SUNNY</small></button>
+        <button class="type-card" data-type="infant"><span class="check">✓</span><b>Infant</b><small>Template + Excel Infant</small></button>
+      </div>
+      <div class="subtypes show" id="glowLevels"><div class="sub-label">LEVEL GLOW</div><div class="seg"><button class="active" data-level="lower">Lower</button><button data-level="middle">Middle</button><button data-level="upper">Upper</button></div></div>
+      <div class="drop" id="excelDrop"><div class="drop-icon">📄</div><b>Upload file Excel</b><p>Glow / Sunny / Infant: sistem mencocokkan sheet berdasarkan header Excel yang sesuai template.</p><button class="btn btn-secondary" id="excelBtn">Pilih Excel</button><input id="excelInput" type="file" accept=".xlsx,.xls,.xlsm" hidden></div>
+      <div class="file-info" id="excelInfo">Belum ada file Excel.</div>
+      <div class="drop" id="photoDrop"><div class="drop-icon">🖼️</div><b>Upload foto siswa</b><p>Bisa upload banyak foto sekaligus, atau gunakan 📷 di samping nama siswa untuk upload satu per satu.</p><button class="btn btn-secondary" id="photoBtn">Pilih Folder Foto</button><input id="photoInput" type="file" accept="image/*" webkitdirectory directory multiple hidden></div>
+      <div class="file-info" id="photoInfo">Belum ada foto.</div>
+      <div class="note"><b>Foto otomatis:</b> sistem mencocokkan nama siswa dengan nama file foto. Jika tidak cocok, pilih siswa lalu gunakan tombol foto manual.</div>
+      <div class="settings">
+        <div class="two"><div class="field"><label>KOTA / CABANG</label><input id="city" value="Purwokerto" placeholder="Contoh: Purwokerto"></div><div class="field"><label>TANGGAL RAPOR</label><input id="reportDate" type="date"></div></div>
+        <div class="two"><div class="field"><label>PERIODE / TAHUN AJARAN</label><input id="period" value="III / 2025 - 2026" placeholder="Contoh: III / 2025 - 2026"></div><div class="field"><label>KELAS</label><input id="className" value="GLOW CLASS" placeholder="Nama kelas"></div></div>
+        <div class="two"><div class="field"><label>GURU KELAS (OPSIONAL)</label><input id="teacher" placeholder="Kosong = ambil dari Excel"></div><div class="field"><label>PIMPINAN</label><input id="principal" value="Michelle Juwono" placeholder="Nama pimpinan"></div></div>
+      </div>
+      <div id="message" class="notice"></div>
+      <div class="actions"><button class="btn btn-primary" id="generateBtn" disabled>Generate Semua Rapor</button><button class="btn btn-light" id="resetBtn">Reset</button></div>
+      <div class="progress" id="progress"><div class="progress-top"><span id="progressText">Menyiapkan…</span><span id="progressPct">0%</span></div><div class="bar"><i id="progressBar"></i></div></div>
+    </div>
+  </aside>
+  <section class="panel">
+    <div id="emptyState" class="empty"><div><div class="empty-icon">📚</div><h3>Belum ada data siswa</h3><p>Mulai dengan memilih jenis rapor dan upload Excel. Setelah terbaca, daftar siswa dan preview rapor akan muncul di sini.</p></div></div>
+    <div id="result" class="result">
+      <div class="stats"><div class="stat"><small>SISWA</small><b id="statStudents">0</b></div><div class="stat"><small>FOTO COCOK</small><b id="statPhotos">0</b></div><div class="stat"><small>TEMPLATE</small><b id="statTemplate">-</b></div><div class="stat"><small>STATUS</small><b id="statStatus">Siap</b></div></div>
+      <div class="student-area">
+        <div class="student-panel"><div class="student-head"><b>Daftar siswa</b><span id="studentCount">0 siswa</span></div><div class="student-list" id="studentList"></div></div>
+        <div class="preview"><div class="preview-head"><h3 id="previewTitle">Preview rapor</h3><small id="previewMeta">Pilih siswa</small></div><div class="preview-frame" id="previewFrame"><div class="preview-placeholder">Preview akan muncul setelah Excel terbaca.</div></div><div class="preview-actions"><button class="btn btn-light" id="manualPhotoBtn" disabled>📷 Foto siswa</button><button class="btn btn-light" id="downloadOneBtn" disabled>↓ Download PDF</button><button class="btn btn-primary" id="downloadZipBtn" disabled>↓ Generate & Download ZIP</button></div><input id="manualPhotoInput" type="file" accept="image/*" hidden></div>
+      </div>
+    </div>
+  </section>
+</section>
+</main>
+<footer class="footer">Rapor Generator · GitHub Pages · Tidak membutuhkan backend atau database</footer>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js'"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js'"></script>
+<script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js'"></script>
+<script src="vendor/jszip.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
