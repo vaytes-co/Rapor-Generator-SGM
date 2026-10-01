@@ -597,7 +597,6 @@ function noteBox(kind,pageIndex){
   // Glow Lower
   return {x:20,y:615,w:562,h:133};
 }
-
 function signaturePositions(kind,pageIndex){
   const cfg=getSignatureConfig(kind,pageIndex);
   return {date:cfg.date,teacher:cfg.teacher,principal:cfg.principal};

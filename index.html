@@ -19,12 +19,43 @@
     <div class="splash-loader"><i></i></div>
   </div>
 </div>
-<header class="topbar"><div class="topbar-inner"><div class="brand"><div class="brand-mark">RG</div><div><h1>Rapor Generator</h1><p>Excel → rapor PDF, langsung di browser</p></div></div><div class="online"><i></i> Data diproses lokal di perangkat</div></div></header>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-logo">
+        <img src="assets/img/logo/BLC LOGOS.png" width="50px" alt="Logo Rapor Generator">
+      </div>
+      <div>
+        <h1>Rapor Generator</h1>
+        <p>Excel → rapor PDF, langsung di browser</p>
+      </div>
+    </div>
+    <div class="online"><i></i> Data diproses lokal di perangkat</div>
+  </div>
+</header>
 <main class="shell">
 <section class="hero">
   <div class="hero-card hero-main">
-    <div class="ambient-bee" aria-hidden="true">🐝</div><span class="eyebrow"><i class="eyebrow-dot"></i> RAPOR OTOMATIS</span><h2>Dari Excel jadi <span>rapor siap cetak.</span></h2><p>Upload rekapan nilai, masukkan foto siswa, atur tanggal dan informasi rapor, lalu generate semua siswa sekaligus. Tidak ada server dan tidak ada database.</p></div>
+    <div class="ambient-bee" aria-hidden="true">🐝</div><span class="eyebrow"><i class="eyebrow-dot"></i> RAPOR OTOMATIS</span><h2>Dari Excel jadi <span>rapor siap cetak.</span></h2><p>Upload rekapan nilai, masukkan foto siswa, atur tanggal dan informasi rapor, lalu generate semua siswa sekaligus.</p></div>
   <div class="hero-card hero-side"><div class="hero-side-head"><strong>Alur kerja</strong><span class="live-pill"><i></i> LIVE</span></div><div class="flow" style="margin-top:13px"><div class="flow-row"><span class="flow-num">1</span>Pilih jenis rapor</div><div class="flow-row"><span class="flow-num">2</span>Upload Excel + foto</div><div class="flow-row"><span class="flow-num">3</span>Atur tanggal & informasi</div><div class="flow-row"><span class="flow-num">4</span>Preview lalu generate PDF</div></div></div>
+</section>
+
+<section class="workspace-hero" id="workspaceHero" aria-label="Rapor workspace">
+  <div class="workspace-head">
+    <div>
+      <span class="workspace-kicker"><i></i> SMART REPORT WORKSPACE</span>
+      <h2>Rapor, siap pakai <span>tinggal download terus print.</span></h2>
+      <p>Dokumen template, data siswa, preview, dan hasil akhir dalam satu alur kerja.</p>
+    </div>
+    <div class="workspace-badge"><span class="badge-dot"></span><b id="workspaceStatus">READY TO START</b><small>Local processing</small></div>
+  </div>
+  <div class="stagebar">
+    <div class="stage active" data-stage="1"><span>01</span><div><b>DATA</b><small>Import & template</small></div></div>
+    <div class="stage-line"><i></i></div>
+    <div class="stage" data-stage="2"><span>02</span><div><b>REVIEW</b><small>Students & preview</small></div></div>
+    <div class="stage-line"><i></i></div>
+    <div class="stage" data-stage="3"><span>03</span><div><b>EXPORT</b><small>Generate & download</small></div></div>
+  </div>
 </section>
 <section class="layout">
   <aside class="panel">
@@ -32,8 +63,8 @@
     <div class="panel-body">
       <div class="type-grid">
         <button class="type-card active" data-type="glow"><span class="check">✓</span><b>Glow</b><small>Lower · Middle · Upper</small></button>
-        <button class="type-card" data-type="sunny"><span class="check">✓</span><b>Sunny</b><small>Sheet RAPOT SUNNY</small></button>
-        <button class="type-card" data-type="infant"><span class="check">✓</span><b>Infant</b><small>Template + Excel Infant</small></button>
+        <button class="type-card" data-type="sunny"><span class="check">✓</span><b>Sunny</b><small>RAPOT SUNNY</small></button>
+        <button class="type-card" data-type="infant"><span class="check">✓</span><b>Infant</b><small>RAPOT INFANT</small></button>
       </div>
       <div class="subtypes show" id="glowLevels"><div class="sub-label">LEVEL GLOW</div><div class="seg"><button class="active" data-level="lower">Lower</button><button data-level="middle">Middle</button><button data-level="upper">Upper</button></div></div>
       <div class="drop" id="excelDrop"><div class="drop-icon">📄</div><b>Upload file Excel</b><p>Glow / Sunny / Infant: sistem mencocokkan sheet berdasarkan header Excel yang sesuai template.</p><button class="btn btn-secondary" id="excelBtn">Pilih Excel</button><input id="excelInput" type="file" accept=".xlsx,.xls,.xlsm" hidden></div>
@@ -76,6 +107,10 @@
   <section class="panel">
     <div id="emptyState" class="empty"><div><div class="empty-icon">📚</div><h3>Belum ada data siswa</h3><p>Mulai dengan memilih jenis rapor dan upload Excel. Setelah terbaca, daftar siswa dan preview rapor akan muncul di sini.</p></div></div>
     <div id="result" class="result">
+      <div class="result-command">
+        <div><span class="result-kicker">REPORT WORKSPACE</span><h3 id="resultHeadline">Student reports are ready to review.</h3><p id="resultSubline">Select a student to inspect the generated report.</p></div>
+        <div class="result-chip"><span id="resultChipDot"></span><b id="resultChipText">READY</b></div>
+      </div>
       <div class="stats"><div class="stat"><small>SISWA</small><b id="statStudents">0</b></div><div class="stat"><small>FOTO COCOK</small><b id="statPhotos">0</b></div><div class="stat"><small>TEMPLATE</small><b id="statTemplate">-</b></div><div class="stat"><small>STATUS</small><b id="statStatus">Siap</b></div></div>
       <div class="student-area">
         <div class="student-panel"><div class="student-head"><b>Daftar siswa</b><span id="studentCount">0 siswa</span></div><div class="student-list" id="studentList"></div></div>
@@ -85,6 +120,18 @@
   </section>
 </section>
 </main>
+<div class="export-success" id="exportSuccess" aria-hidden="true">
+  <div class="export-backdrop"></div>
+  <div class="export-card">
+    <div class="export-orbit"><span>✓</span><i></i><i></i><i></i></div>
+    <span class="export-kicker">EXPORT COMPLETE</span>
+    <h2>Semua rapor sudah siap.</h2>
+    <p id="exportSuccessText">File berhasil dibuat dan siap diunduh.</p>
+    <div class="export-metrics"><div><b id="exportStudentCount">0</b><small>SISWA</small></div><div><b>100%</b><small>READY</small></div><div><b>ZIP</b><small>FORMAT</small></div></div>
+    <button class="btn btn-primary" id="exportCloseBtn">Lihat hasil</button>
+  </div>
+</div>
+
 <div class="template-modal" id="templateModal" aria-hidden="true">
   <div class="template-backdrop" data-template-cancel></div>
   <div class="template-dialog" role="dialog" aria-modal="true" aria-labelledby="templateModalTitle">
@@ -140,10 +187,19 @@
       particles.appendChild(dot);
     }
   }
+  let hidden=false;
   const hide=()=>{
-    setTimeout(()=>{ splash.classList.add('hide'); setTimeout(()=>splash.remove(),700); }, reduce?250:1250);
+    if(hidden) return;
+    hidden=true;
+    splash.classList.add('hide');
+    setTimeout(()=>splash.remove(),700);
   };
-  if(document.readyState==='complete') hide(); else window.addEventListener('load',hide,{once:true});
+  // Splash tidak boleh bergantung pada seluruh asset eksternal selesai load.
+  // Jika CDN lambat/gagal, aplikasi tetap bisa dibuka dan menampilkan pesan library.
+  const delay=reduce?250:900;
+  setTimeout(hide,delay);
+  if(document.readyState!=='complete') window.addEventListener('load',hide,{once:true});
+  else hide();
 })();
 </script>
 
@@ -179,6 +235,100 @@
   const style = document.createElement('style');
   style.textContent = `@keyframes studentReveal{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}`;
   document.head.appendChild(style);
+})();
+</script>
+
+<script>
+/* Workspace presentation layer — visual orchestration only. */
+(() => {
+  const $ = id => document.getElementById(id);
+  const result = $('result');
+  const hero = $('workspaceHero');
+  const stages = [...document.querySelectorAll('.stage')];
+  const lines = [...document.querySelectorAll('.stage-line')];
+  const status = $('workspaceStatus');
+  const headline = $('resultHeadline');
+  const subline = $('resultSubline');
+  const chipText = $('resultChipText');
+  const success = $('exportSuccess');
+  const closeSuccess = $('exportCloseBtn');
+  const count = $('statStudents');
+  const generate = $('generateBtn');
+  const zip = $('downloadZipBtn');
+  let lastCount = 0;
+
+  const setStage = n => {
+    stages.forEach((el,i) => el.classList.toggle('active', i < n));
+    stages.forEach((el,i) => el.classList.toggle('current', i === n-1));
+    lines.forEach((el,i) => el.classList.toggle('done', i < n-1));
+  };
+
+  const refresh = () => {
+    const hasResult = result?.classList.contains('show');
+    const n = Number.parseInt(count?.textContent || '0',10) || 0;
+    const excelReady = !!document.querySelector('.file-info.ok');
+    const hasPreview = !!document.querySelector('#previewFrame object, #previewFrame iframe');
+    if (hasResult && n > 0) {
+      setStage(2);
+      status.textContent = hasPreview ? 'REVIEW MODE' : 'DATA LOADED';
+      chipText.textContent = hasPreview ? 'PREVIEW READY' : 'READY';
+      headline.textContent = n === 1 ? '1 student report is ready to review.' : `${n} student reports are ready to review.`;
+      subline.textContent = hasPreview ? 'Preview the selected report, attach a photo, or export the final PDF.' : 'Select a student to inspect the generated report.';
+    } else if (excelReady) {
+      setStage(1);
+      status.textContent = 'DATA IMPORTED';
+    } else {
+      setStage(1);
+      status.textContent = 'READY TO START';
+      chipText.textContent = 'WAITING';
+    }
+    if(n !== lastCount && n > 0){
+      lastCount=n;
+      document.querySelectorAll('.stat b').forEach(el => el.classList.add('metric-pop'));
+      setTimeout(()=>document.querySelectorAll('.stat b').forEach(el => el.classList.remove('metric-pop')),500);
+    }
+  };
+
+  // Jangan observe seluruh body: refresh() sendiri mengubah class/text, sehingga
+  // MutationObserver global bisa memicu loop tak berujung dan membuat halaman freeze.
+  // Polling ringan dipakai hanya untuk sinkronisasi status visual.
+  let refreshBusy = false;
+  const safeRefresh = () => {
+    if (refreshBusy) return;
+    refreshBusy = true;
+    try { refresh(); } finally { refreshBusy = false; }
+  };
+  setInterval(safeRefresh,1000);
+  safeRefresh();
+
+  // Turn the main generate controls into a clear export moment without changing their handlers.
+  [generate,zip].forEach(btn => btn?.addEventListener('click', () => {
+    setStage(3);
+    status.textContent='EXPORTING';
+    chipText.textContent='BUILDING';
+    btn.classList.add('is-generating');
+    setTimeout(()=>btn.classList.remove('is-generating'),1800);
+  }, {capture:true}));
+
+  // Detect successful ZIP/PDF completion from the existing success notice text.
+  const notice = $('message');
+  const noticeObserver = new MutationObserver(() => {
+    if(!notice || !notice.classList.contains('show') || !notice.classList.contains('success')) return;
+    const text=(notice.textContent||'').toLowerCase();
+    if(!/rapor berhasil dibuat|berhasil dikemas ke zip/.test(text)) return;
+    const n=Number.parseInt(count?.textContent||'0',10)||0;
+    $('exportStudentCount').textContent=n;
+    $('exportSuccessText').textContent = n ? `${n} laporan telah diproses dan siap digunakan.` : 'File berhasil dibuat dan siap diunduh.';
+    success?.classList.add('show');
+    success?.setAttribute('aria-hidden','false');
+    setStage(3);
+  });
+  if(notice) noticeObserver.observe(notice,{subtree:true,childList:true,characterData:true,attributes:true});
+
+  const hide=()=>{success?.classList.remove('show');success?.setAttribute('aria-hidden','true');refresh();};
+  closeSuccess?.addEventListener('click',hide);
+  success?.addEventListener('click',e=>{if(e.target.classList.contains('export-backdrop'))hide();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&success?.classList.contains('show'))hide();});
 })();
 </script>
 </body>
