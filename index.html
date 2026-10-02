@@ -111,7 +111,8 @@
         </section>
 
         <details class="advanced-settings" id="advancedSettings">
-          <summary><span><b>Pengaturan posisi</b><small>Sesuaikan posisi biodata dan tanda tangan</small></span><i>+</i></summary>
+          <summary><span><em>Pengaturan lanjutan</em><b>Atur posisi rapor</b><small>Sesuaikan biodata, tanda tangan, dan detail halaman tanpa mengganggu tampilan utama.</small></span><i>+</i></summary>
+          <div class="settings-overview"><div><span>Mode saat ini</span><b id="settingsModeText">Posisi standar</b></div><div><span>Biodata</span><b id="settingsBiodataText">X 0 · Y 5 · 12 pt</b></div><div><span>Tanda tangan</span><b id="settingsSignatureText">Halaman 2</b></div></div>
           <div class="page-settings" id="pageSettings">
             <div class="page-settings-head"><div><b>Pengaturan posisi per halaman</b><small>Setiap template mengikuti jumlah halaman aslinya.</small></div></div>
             <div class="page-setting-card biodata-setting-card">
@@ -157,12 +158,16 @@
               <div><span class="list-kicker">SISWA</span><b>Daftar siswa</b><span id="studentCount">0 siswa</span></div>
               <label class="student-filter"><span>Guru</span><select id="teacherFilter"><option value="">Semua guru</option></select></label>
             </div>
+            <div class="selection-toolbar">
+              <div><span id="selectionCount">0 dipilih</span><small>Centang siswa yang ingin diunduh atau tandai sudah diperiksa.</small></div>
+              <div class="selection-actions"><button type="button" id="selectVisibleBtn">Pilih tampil</button><button type="button" id="clearSelectionBtn">Bersihkan</button></div>
+            </div>
             <div class="student-list" id="studentList"></div>
           </div>
           <div class="preview">
             <div class="preview-head"><div><span class="preview-kicker">PREVIEW</span><h3 id="previewTitle">Preview rapor</h3><small id="previewMeta">Pilih siswa</small></div><span class="preview-note">Tampilan sebelum diunduh</span></div>
             <div class="preview-frame" id="previewFrame"><div class="preview-placeholder">Preview akan muncul setelah Excel terbaca.</div></div>
-            <div class="preview-actions"><button class="btn btn-light" id="manualPhotoBtn" disabled>📷 Tambah foto</button><button class="btn btn-light" id="downloadOneBtn" disabled>Unduh PDF</button><button class="btn btn-primary" id="downloadZipBtn" disabled>Unduh ZIP</button></div>
+            <div class="preview-actions"><button class="btn btn-light" id="manualPhotoBtn" disabled>📷 Tambah foto</button><button class="btn btn-light" id="downloadOneBtn" disabled>Unduh PDF</button><div class="zip-action"><select id="downloadScope" aria-label="Pilihan siswa untuk ZIP"><option value="selected">Yang dipilih</option><option value="visible">Yang tampil</option><option value="all">Semua siswa</option></select><button class="btn btn-primary" id="downloadZipBtn" disabled>Unduh ZIP</button></div></div>
             <input id="manualPhotoInput" type="file" accept="image/*" hidden>
           </div>
         </div>
