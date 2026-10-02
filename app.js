@@ -496,7 +496,36 @@ function drawMultiline(page,text,x,top,w,h,size=11,color=COLORS.black,align='lef
 function writeTransparent(page,box,text,opt={}){if(!clean(text))return;if(opt.center)drawText(page,text,box.x,box.y+(box.h-(opt.size||12))/2,box.w,opt.size||12,opt.color||COLORS.black,'center',!!opt.bold);else drawMultiline(page,text,box.x+2,box.y+2,box.w-4,box.h-4,opt.size||12,opt.color||COLORS.black,opt.align||'left',!!opt.bold);}
 function fillRect(page,box,color=COLORS.orange){page.drawRectangle({x:box.x,y:page.getHeight()-box.y-box.h,width:box.w,height:box.h,color,borderWidth:0});}
 
-function photoFor(student){if(!student)return null;if(state.manualPhotos.has(student.id))return state.manualPhotos.get(student.id);const candidates=[student.name,student.displayName].map(norm).filter(Boolean);for(const c of candidates)if(state.photos.has(c))return state.photos.get(c);const matches=[];for(const [key,val] of state.photos){for(const c of candidates)if(key.includes(c)||c.includes(key))matches.push({score:Math.max(key.length,c.length),val});}matches.sort((a,b)=>b.score-a.score);return matches[0]?.val||null;}
+function photoFor(student){
+  if(!student)return null;
+  if(state.manualPhotos.has(student.id))return state.manualPhotos.get(student.id);
+
+  // Prioritas utama: nama file foto harus sama dengan nama siswa.
+  // norm() sudah mengabaikan ekstensi, huruf besar/kecil, spasi, dan tanda baca.
+  const candidates=[student.name,student.displayName].map(norm).filter(Boolean);
+  for(const c of candidates){
+    const exact=state.photos.get(c);
+    if(exact)return exact;
+  }
+
+  // Fallback hanya jika tidak ada exact match.
+  // Jika ada lebih dari satu kandidat dengan skor yang sama, jangan menebak.
+  const matches=[];
+  for(const [key,val] of state.photos){
+    for(const c of candidates){
+      if(!c)continue;
+      if(key.includes(c)||c.includes(key)){
+        matches.push({score:Math.min(key.length,c.length)/Math.max(key.length,c.length),length:Math.max(key.length,c.length),key,val});
+      }
+    }
+  }
+  matches.sort((a,b)=>b.score-a.score||b.length-a.length);
+  if(!matches.length)return null;
+  const best=matches[0];
+  const second=matches[1];
+  if(second && Math.abs(best.score-second.score)<0.03 && best.key!==second.key)return null;
+  return best.val;
+}
 function parseRows(ws){return XLSX.utils.sheet_to_json(ws,{defval:'',raw:true});}
 function getFieldValue(row,header){if(Object.prototype.hasOwnProperty.call(row,header))return row[header];const target=norm(header);const key=Object.keys(row).find(k=>norm(k)===target);return key?row[key]:'';}
 function findWorksheet(cfg){const direct=state.workbook.Sheets[cfg.sheet];if(direct)return direct;const wanted=Object.values(cfg.fields).slice(0,10).map(norm);let best=null,bestScore=-1;for(const name of state.workbook.SheetNames){const ws=state.workbook.Sheets[name];const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});const header=(rows[0]||[]).map(norm);const score=wanted.filter(x=>x&&header.includes(x)).length;if(score>bestScore){bestScore=score;best=ws;}}if(bestScore>=2)return best;return null;}
@@ -684,7 +713,19 @@ async function downloadZip(){
   $('progressText').textContent=`${added} rapor siap diunduh.`;
   showMsg(`${added} rapor berhasil dikemas ke ZIP.`,'success');
 }
-function saveBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);}
+let downloadInProgress=false;
+function saveBlob(blob,name){
+  downloadInProgress=true;
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=name;
+  a.setAttribute('download',name);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>{URL.revokeObjectURL(url);downloadInProgress=false;},1800);
+}
 
 loadSignatureStore();
 loadBiodataStore();
@@ -700,7 +741,7 @@ $('teacherFilter')?.addEventListener('change',()=>{const filtered=getFilteredStu
 // Browser tetap dapat menampilkan dialog native untuk refresh/tutup tab dari UI browser.
 // Semua aksi yang bisa kita intercept dari halaman memakai modal custom di bawah.
 window.addEventListener('beforeunload',e=>{
-  if(!hasUnsavedWork||allowUnload)return;
+  if(!hasUnsavedWork||allowUnload||downloadInProgress)return;
   e.preventDefault();
   e.returnValue='';
 });
