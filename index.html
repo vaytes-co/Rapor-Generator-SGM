@@ -30,36 +30,36 @@
         <p>Excel → rapor PDF, langsung di browser</p>
       </div>
     </div>
-    <div class="online"><i></i> Data diproses lokal di perangkat</div>
+    <div class="online"><i></i> Siap digunakan</div>
   </div>
 </header>
 <main class="shell">
 <section class="hero">
   <div class="hero-card hero-main">
-    <div class="ambient-bee" aria-hidden="true">🐝</div><span class="eyebrow"><i class="eyebrow-dot"></i> RAPOR OTOMATIS</span><h2>Dari Excel jadi <span>rapor siap cetak.</span></h2><p>Upload rekapan nilai, masukkan foto siswa, atur tanggal dan informasi rapor, lalu generate semua siswa sekaligus.</p></div>
-  <div class="hero-card hero-side"><div class="hero-side-head"><strong>Alur kerja</strong><span class="live-pill"><i></i> LIVE</span></div><div class="flow" style="margin-top:13px"><div class="flow-row"><span class="flow-num">1</span>Pilih jenis rapor</div><div class="flow-row"><span class="flow-num">2</span>Upload Excel + foto</div><div class="flow-row"><span class="flow-num">3</span>Atur tanggal & informasi</div><div class="flow-row"><span class="flow-num">4</span>Preview lalu generate PDF</div></div></div>
+    <div class="ambient-bee" aria-hidden="true">🐝</div><span class="eyebrow"><i class="eyebrow-dot"></i> RAPOR GENERATOR</span><h2>Urusan rapor jadi <span>lebih praktis.</span></h2><p>Pilih template, masukkan data dari Excel, cek hasilnya, lalu simpan rapor dalam PDF. Semua kebutuhan utama ada di satu halaman.</p></div>
+  <div class="hero-card hero-side"><div class="hero-side-head"><strong>Langkah kerja</strong><span class="live-pill"><i></i> SIAP</span></div><div class="flow" style="margin-top:13px"><div class="flow-row"><span class="flow-num">1</span>Pilih jenis rapor</div><div class="flow-row"><span class="flow-num">2</span>Upload Excel + foto</div><div class="flow-row"><span class="flow-num">3</span>Atur tanggal & informasi</div><div class="flow-row"><span class="flow-num">4</span>Preview lalu generate PDF</div></div></div>
 </section>
 
 <section class="workspace-hero" id="workspaceHero" aria-label="Rapor workspace">
   <div class="workspace-head">
     <div>
-      <span class="workspace-kicker"><i></i> SMART REPORT WORKSPACE</span>
-      <h2>Rapor, siap dari <span>data sampai export.</span></h2>
-      <p>Kelola template, data siswa, preview, dan hasil akhir dalam satu alur kerja.</p>
+      <span class="workspace-kicker"><i></i> AREA KERJA RAPOR</span>
+      <h2>Kelola rapor dari <span>awal sampai selesai.</span></h2>
+      <p>Pilih data, periksa setiap siswa, lalu unduh hasilnya saat semuanya sudah sesuai.</p>
     </div>
-    <div class="workspace-badge"><span class="badge-dot"></span><b id="workspaceStatus">READY TO START</b><small>Local processing</small></div>
+    <div class="workspace-badge"><span class="badge-dot"></span><b id="workspaceStatus">SIAP DIMULAI</b><small>Ruang kerja</small></div>
   </div>
   <div class="stagebar">
-    <div class="stage active" data-stage="1"><span>01</span><div><b>DATA</b><small>Import & template</small></div></div>
+    <div class="stage active" data-stage="1"><span>01</span><div><b>DATA</b><small>Template & Excel</small></div></div>
     <div class="stage-line"><i></i></div>
-    <div class="stage" data-stage="2"><span>02</span><div><b>REVIEW</b><small>Students & preview</small></div></div>
+    <div class="stage" data-stage="2"><span>02</span><div><b>CEK</b><small>Siswa & preview</small></div></div>
     <div class="stage-line"><i></i></div>
-    <div class="stage" data-stage="3"><span>03</span><div><b>EXPORT</b><small>Generate & download</small></div></div>
+    <div class="stage" data-stage="3"><span>03</span><div><b>HASIL</b><small>Generate & unduh</small></div></div>
   </div>
 </section>
 <section class="layout">
   <aside class="panel">
-    <div class="panel-head"><h3>1. Sumber data</h3><small>Semua diproses di browser</small></div>
+    <div class="panel-head"><h3>1. Siapkan data</h3><small>Pilih template dan masukkan file</small></div>
     <div class="panel-body">
       <div class="type-grid">
         <button class="type-card active" data-type="glow"><span class="check">✓</span><b>Glow</b><small>Lower · Middle · Upper</small></button>
@@ -67,11 +67,11 @@
         <button class="type-card" data-type="infant"><span class="check">✓</span><b>Infant</b><small>Template + Excel Infant</small></button>
       </div>
       <div class="subtypes show" id="glowLevels"><div class="sub-label">LEVEL GLOW</div><div class="seg"><button class="active" data-level="lower">Lower</button><button data-level="middle">Middle</button><button data-level="upper">Upper</button></div></div>
-      <div class="drop" id="excelDrop"><div class="drop-icon">📄</div><b>Upload file Excel</b><p>Glow / Sunny / Infant: sistem mencocokkan sheet berdasarkan header Excel yang sesuai template.</p><button class="btn btn-secondary" id="excelBtn">Pilih Excel</button><input id="excelInput" type="file" accept=".xlsx,.xls,.xlsm" hidden></div>
+      <div class="drop" id="excelDrop"><div class="drop-icon">📄</div><b>Upload file Excel</b><p>Pilih file Excel sesuai template rapor yang digunakan. Format akan diperiksa otomatis.</p><button class="btn btn-secondary" id="excelBtn">Pilih Excel</button><input id="excelInput" type="file" accept=".xlsx,.xls,.xlsm" hidden></div>
       <div class="file-info" id="excelInfo">Belum ada file Excel.</div>
-      <div class="drop" id="photoDrop"><div class="drop-icon">🖼️</div><b>Upload foto siswa</b><p>Bisa upload banyak foto sekaligus, atau gunakan 📷 di samping nama siswa untuk upload satu per satu.</p><button class="btn btn-secondary" id="photoBtn">Pilih Folder Foto</button><input id="photoInput" type="file" accept="image/*" webkitdirectory directory multiple hidden></div>
+      <div class="drop" id="photoDrop"><div class="drop-icon">🖼️</div><b>Upload foto siswa</b><p>Pilih banyak foto sekaligus, atau tambahkan foto satu per satu dari daftar siswa.</p><button class="btn btn-secondary" id="photoBtn">Pilih Folder Foto</button><input id="photoInput" type="file" accept="image/*" webkitdirectory directory multiple hidden></div>
       <div class="file-info" id="photoInfo">Belum ada foto.</div>
-      <div class="note"><b>Foto otomatis:</b> sistem mencocokkan nama siswa dengan nama file foto. Jika tidak cocok, pilih siswa lalu gunakan tombol foto manual.</div>
+      <div class="note"><b>Catatan:</b> nama file foto sebaiknya mengikuti nama siswa agar bisa dicocokkan otomatis.</div>
 <div class="settings">
         <div class="two"><div class="field"><label>KOTA / CABANG</label><input id="city" value="Purwokerto" placeholder="Contoh: Purwokerto"></div><div class="field"><label>TANGGAL RAPOR</label><input id="reportDate" type="date"></div></div>
         <div class="two"><div class="field"><label>PERIODE / TAHUN AJARAN</label><input id="period" value="III / 2025 - 2026" placeholder="Contoh: III / 2025 - 2026"></div><div class="field"><label>KELAS</label><input id="className" value="GLOW CLASS" placeholder="Nama kelas"></div></div>
@@ -91,30 +91,30 @@
 
         <div class="page-setting-card signature-settings" id="signatureSettings">
           <div class="page-setting-title">
-            <div><b>Halaman tanda tangan</b><span>Pilih halaman yang ingin diatur.</span></div>
+            <div><b>Tanda tangan</b><span>Pilih halaman yang ingin disesuaikan.</span></div>
             <button type="button" class="btn btn-light btn-xs" id="resetSignatureBtn">Reset halaman</button>
           </div>
           <div class="signature-page-row"><label for="signaturePageSelect">Halaman</label><select id="signaturePageSelect"></select></div>
           <div class="signature-editor" id="signatureEditor"></div>
-          <div class="signature-hint">Posisi X/Y dan gaya tanggal, nama guru, serta nama pimpinan disimpan terpisah untuk setiap halaman.</div>
+          <div class="signature-hint">Atur posisi tanggal, nama guru, dan nama pimpinan sesuai kebutuhan template.</div>
         </div>
       </div>
       <div id="message" class="notice"></div>
-      <div class="actions"><button class="btn btn-primary" id="generateBtn" disabled>Generate Semua Rapor</button><button class="btn btn-light" id="resetBtn">Reset</button></div>
+      <div class="actions"><button class="btn btn-primary" id="generateBtn" disabled>Buat Semua Rapor</button><button class="btn btn-light" id="resetBtn">Mulai Ulang</button></div>
       <div class="progress" id="progress"><div class="progress-top"><span id="progressText">Menyiapkan…</span><span id="progressPct">0%</span></div><div class="bar"><i id="progressBar"></i></div></div>
     </div>
   </aside>
   <section class="panel">
-    <div id="emptyState" class="empty"><div><div class="empty-icon">📚</div><h3>Belum ada data siswa</h3><p>Mulai dengan memilih jenis rapor dan upload Excel. Setelah terbaca, daftar siswa dan preview rapor akan muncul di sini.</p></div></div>
+    <div id="emptyState" class="empty"><div><div class="empty-icon">📚</div><h3>Belum ada data siswa</h3><p>Pilih jenis rapor, lalu upload file Excel. Setelah data terbaca, daftar siswa dan preview akan tersedia di sini.</p></div></div>
     <div id="result" class="result">
       <div class="result-command">
-        <div><span class="result-kicker">REPORT WORKSPACE</span><h3 id="resultHeadline">Student reports are ready to review.</h3><p id="resultSubline">Select a student to inspect the generated report.</p></div>
+        <div><span class="result-kicker">HASIL RAPOR</span><h3 id="resultHeadline">Data siswa sudah siap diperiksa.</h3><p id="resultSubline">Pilih nama siswa untuk melihat preview rapornya.</p></div>
         <div class="result-chip"><span id="resultChipDot"></span><b id="resultChipText">READY</b></div>
       </div>
-      <div class="stats"><div class="stat"><small>SISWA</small><b id="statStudents">0</b></div><div class="stat"><small>FOTO COCOK</small><b id="statPhotos">0</b></div><div class="stat"><small>TEMPLATE</small><b id="statTemplate">-</b></div><div class="stat"><small>STATUS</small><b id="statStatus">Siap</b></div></div>
+      <div class="stats"><div class="stat"><small>SISWA</small><b id="statStudents">0</b></div><div class="stat"><small>FOTO SESUAI</small><b id="statPhotos">0</b></div><div class="stat"><small>TEMPLATE</small><b id="statTemplate">-</b></div><div class="stat"><small>STATUS</small><b id="statStatus">Siap</b></div></div>
       <div class="student-area">
-        <div class="student-panel"><div class="student-head"><b>Daftar siswa</b><span id="studentCount">0 siswa</span></div><div class="student-list" id="studentList"></div></div>
-        <div class="preview"><div class="preview-head"><h3 id="previewTitle">Preview rapor</h3><small id="previewMeta">Pilih siswa</small></div><div class="preview-frame" id="previewFrame"><div class="preview-placeholder">Preview akan muncul setelah Excel terbaca.</div></div><div class="preview-actions"><button class="btn btn-light" id="manualPhotoBtn" disabled>📷 Foto siswa</button><button class="btn btn-light" id="downloadOneBtn" disabled>↓ Download PDF</button><button class="btn btn-primary" id="downloadZipBtn" disabled>↓ Generate & Download ZIP</button></div><input id="manualPhotoInput" type="file" accept="image/*" hidden></div>
+        <div class="student-panel"><div class="student-head"><div><b>Daftar siswa</b><span id="studentCount">0 siswa</span></div><label class="student-filter"><span>Guru</span><select id="teacherFilter"><option value="">Semua guru</option></select></label></div><div class="student-list" id="studentList"></div></div>
+        <div class="preview"><div class="preview-head"><div><h3 id="previewTitle">Preview rapor</h3><small id="previewMeta">Pilih siswa</small></div><span class="preview-note">Tampilan sebelum diunduh</span></div><div class="preview-frame" id="previewFrame"><div class="preview-placeholder">Preview akan muncul setelah Excel terbaca.</div></div><div class="preview-actions"><button class="btn btn-light" id="manualPhotoBtn" disabled>📷 Foto siswa</button><button class="btn btn-light" id="downloadOneBtn" disabled>Unduh PDF</button><button class="btn btn-primary" id="downloadZipBtn" disabled>Unduh ZIP</button></div><input id="manualPhotoInput" type="file" accept="image/*" hidden></div>
       </div>
     </div>
   </section>
@@ -127,8 +127,8 @@
     <span class="export-kicker">EXPORT COMPLETE</span>
     <h2>Semua rapor sudah siap.</h2>
     <p id="exportSuccessText">File berhasil dibuat dan siap diunduh.</p>
-    <div class="export-metrics"><div><b id="exportStudentCount">0</b><small>SISWA</small></div><div><b>100%</b><small>READY</small></div><div><b>ZIP</b><small>FORMAT</small></div></div>
-    <button class="btn btn-primary" id="exportCloseBtn">Lihat hasil</button>
+    <div class="export-metrics"><div><b id="exportStudentCount">0</b><small>SISWA</small></div><div><b>PDF</b><small>SIAP</small></div><div><b>ZIP</b><small>ARSIP</small></div></div>
+    <button class="btn btn-primary" id="exportCloseBtn">Kembali ke hasil</button>
   </div>
 </div>
 
@@ -309,10 +309,10 @@
     const hasPreview = !!document.querySelector('#previewFrame object, #previewFrame iframe');
     if (hasResult && n > 0) {
       setStage(2);
-      status.textContent = hasPreview ? 'REVIEW MODE' : 'DATA LOADED';
-      chipText.textContent = hasPreview ? 'PREVIEW READY' : 'READY';
-      headline.textContent = n === 1 ? '1 student report is ready to review.' : `${n} student reports are ready to review.`;
-      subline.textContent = hasPreview ? 'Preview the selected report, attach a photo, or export the final PDF.' : 'Select a student to inspect the generated report.';
+      status.textContent = hasPreview ? 'SEDANG DIPERIKSA' : 'DATA MASUK';
+      chipText.textContent = hasPreview ? 'PREVIEW SIAP' : 'SIAP';
+      headline.textContent = n === 1 ? '1 rapor siap diperiksa.' : `${n} rapor siap diperiksa.`;
+      subline.textContent = hasPreview ? 'Periksa preview, tambahkan foto jika perlu, lalu unduh hasilnya.' : 'Pilih nama siswa untuk melihat rapornya.';
     } else if (excelReady) {
       setStage(1);
       status.textContent = 'DATA IMPORTED';

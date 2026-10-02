@@ -500,7 +500,7 @@ function photoFor(student){if(!student)return null;if(state.manualPhotos.has(stu
 function parseRows(ws){return XLSX.utils.sheet_to_json(ws,{defval:'',raw:true});}
 function getFieldValue(row,header){if(Object.prototype.hasOwnProperty.call(row,header))return row[header];const target=norm(header);const key=Object.keys(row).find(k=>norm(k)===target);return key?row[key]:'';}
 function findWorksheet(cfg){const direct=state.workbook.Sheets[cfg.sheet];if(direct)return direct;const wanted=Object.values(cfg.fields).slice(0,10).map(norm);let best=null,bestScore=-1;for(const name of state.workbook.SheetNames){const ws=state.workbook.Sheets[name];const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});const header=(rows[0]||[]).map(norm);const score=wanted.filter(x=>x&&header.includes(x)).length;if(score>bestScore){bestScore=score;best=ws;}}if(bestScore>=2)return best;return null;}
-function parseWorkbook(){if(!state.workbook)return;if(!window.XLSX){showMsg('Library Excel belum termuat.','error');return;}const cfg=state.type==='sunny'?SUNNY:state.type==='infant'?INFANT:CONFIG[state.level];const ws=findWorksheet(cfg);if(!ws){showMsg(`Sheet data untuk ${state.type==='sunny'?'Sunny':state.type==='infant'?'Infant':state.level} tidak ditemukan.`,'error');return;}const rows=parseRows(ws);state.students=rows.filter(r=>clean(getFieldValue(r,cfg.fields.name))).map((r,index)=>{const obj={raw:r,index,id:`${state.type}-${state.level}-${index}`};for(const [k,h] of Object.entries(cfg.fields))obj[k]=getFieldValue(r,h);obj.name=clean(obj.name);obj.displayName=clean(obj.displayName);obj.note=clean(obj.note);obj.teacher=clean(obj.teacher);return obj;});state.selected=state.students[0]||null;state.generated.clear();state.manualPhotos.clear();$('downloadZipBtn').disabled=true;updateUI();}
+function parseWorkbook(){if(!state.workbook)return;if(!window.XLSX){showMsg('Library Excel belum termuat.','error');return;}const cfg=state.type==='sunny'?SUNNY:state.type==='infant'?INFANT:CONFIG[state.level];const ws=findWorksheet(cfg);if(!ws){showMsg(`Sheet data untuk ${state.type==='sunny'?'Sunny':state.type==='infant'?'Infant':state.level} tidak ditemukan.`,'error');return;}const rows=parseRows(ws);state.students=rows.filter(r=>clean(getFieldValue(r,cfg.fields.name))).map((r,index)=>{const obj={raw:r,index,id:`${state.type}-${state.level}-${index}`};for(const [k,h] of Object.entries(cfg.fields))obj[k]=getFieldValue(r,h);obj.name=clean(obj.name);obj.displayName=clean(obj.displayName);obj.note=clean(obj.note);obj.teacher=clean(obj.teacher);return obj;});state.selected=state.students[0]||null;state.generated.clear();state.manualPhotos.clear();$('downloadZipBtn').disabled=true;updateTeacherFilter();updateUI();}
 function expectedTemplateLabel(){if(state.type==='sunny')return 'Sunny';if(state.type==='infant')return 'Infant';return `Glow ${state.level[0].toUpperCase()+state.level.slice(1)}`;}
 function detectWorkbookTemplate(wb){
   const names=wb?.SheetNames||[];
@@ -567,8 +567,35 @@ async function loadExcel(file){
   }catch(err){console.error(err);showMsg('Excel gagal dibaca. Pastikan file .xlsx/.xls yang valid.','error');$('excelInfo').textContent='Excel gagal dibaca.';$('excelInfo').classList.remove('ok');}
 }
 function loadPhotos(files){markDirty();state.photos.clear();for(const f of files){if(!f.type.startsWith('image/'))continue;const key=norm(f.name);if(key)state.photos.set(key,{file:f,url:URL.createObjectURL(f)});}$('photoInfo').textContent=files.length?`✓ ${files.length} foto siap dicocokkan`:'Belum ada foto.';$('photoInfo').classList.toggle('ok',!!files.length);if(state.students.length)updateUI();}
-function updateUI(){if(!state.students.length){$('emptyState').style.display='grid';$('result').classList.remove('show');$('generateBtn').disabled=true;return;}$('emptyState').style.display='none';$('result').classList.add('show');$('generateBtn').disabled=false;$('statStudents').textContent=state.students.length;$('statPhotos').textContent=state.students.filter(s=>photoFor(s)).length;$('statTemplate').textContent=state.type==='sunny'?'Sunny':state.type==='infant'?'Infant':`Glow ${state.level[0].toUpperCase()+state.level.slice(1)}`;$('studentCount').textContent=`${state.students.length} siswa`;renderStudents();if(state.selected)selectStudent(state.selected,false);}
-function renderStudents(){const list=$('studentList');list.innerHTML='';for(const s of state.students){const p=photoFor(s);const b=document.createElement('button');b.className='student'+(state.selected===s?' active':'');b.type='button';b.innerHTML=`<span class="avatar">${p?`<img src="${p.url}" alt="">`:initial(s.name)}</span><span class="student-info"><b>${escapeHtml(s.name)}</b><small>${state.type==='sunny'?'SUNNY':state.type==='infant'?'INFANT':state.level.toUpperCase()}</small></span><span class="student-status ${p?'ok':''}">${p?'✓':'○'}</span><span class="student-photo" title="Tambah/ganti foto">📷</span>`;b.onclick=()=>selectStudent(s,true);b.querySelector('.student-photo').onclick=e=>{e.stopPropagation();chooseManualPhoto(s);};list.appendChild(b);}}
+function getTeacherName(student){return clean(student?.teacher)||'Tanpa nama guru';}
+function getFilteredStudents(){
+  const value=clean($('teacherFilter')?.value||'');
+  return value?state.students.filter(s=>getTeacherName(s)===value):state.students.slice();
+}
+function updateTeacherFilter(){
+  const select=$('teacherFilter');
+  if(!select)return;
+  const current=select.value;
+  const names=[...new Set(state.students.map(getTeacherName))].sort((a,b)=>a.localeCompare(b,'id'));
+  select.innerHTML='<option value="">Semua guru</option>';
+  for(const name of names){
+    const opt=document.createElement('option'); opt.value=name; opt.textContent=name; select.appendChild(opt);
+  }
+  if(names.includes(current))select.value=current;
+}
+function updateUI(){
+  if(!state.students.length){$('emptyState').style.display='grid';$('result').classList.remove('show');$('generateBtn').disabled=true;return;}
+  $('emptyState').style.display='none';$('result').classList.add('show');$('generateBtn').disabled=false;
+  const filtered=getFilteredStudents();
+  $('statStudents').textContent=filtered.length;
+  $('statPhotos').textContent=filtered.filter(s=>photoFor(s)).length;
+  $('statTemplate').textContent=state.type==='sunny'?'Sunny':state.type==='infant'?'Infant':`Glow ${state.level[0].toUpperCase()+state.level.slice(1)}`;
+  $('studentCount').textContent=filtered.length===state.students.length?`${state.students.length} siswa`:`${filtered.length} dari ${state.students.length} siswa`;
+  renderStudents();
+  if(!filtered.includes(state.selected))state.selected=filtered[0]||null;
+  if(state.selected)selectStudent(state.selected,false);
+}
+function renderStudents(){const list=$('studentList');list.innerHTML='';for(const s of getFilteredStudents()){const p=photoFor(s);const b=document.createElement('button');b.className='student'+(state.selected===s?' active':'');b.type='button';b.innerHTML=`<span class="avatar">${p?`<img src="${p.url}" alt="">`:initial(s.name)}</span><span class="student-info"><b>${escapeHtml(s.name)}</b><small>${state.type==='sunny'?'SUNNY':state.type==='infant'?'INFANT':state.level.toUpperCase()}</small></span><span class="student-status ${p?'ok':''}">${p?'✓':'○'}</span><span class="student-photo" title="Tambah/ganti foto">📷</span>`;b.onclick=()=>selectStudent(s,true);b.querySelector('.student-photo').onclick=e=>{e.stopPropagation();chooseManualPhoto(s);};list.appendChild(b);}}
 function chooseManualPhoto(student){if(!student)return;state.selected=student;renderStudents();$('manualPhotoInput').value='';$('manualPhotoInput').click();}
 function setPreview(blob,student){
   if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null;}
@@ -640,7 +667,23 @@ async function generatePdf(student){getLibraries();const cfg=state.type==='sunny
 const note=clean(student.note);if(note){const p=pages[pages.length-1];const b=noteBox(kind,pages.length-1);writeTransparent(p,b,note,{size:10.5});}return new Blob([await doc.save()],{type:'application/pdf'});}
 
 async function generateAll(showSuccess=true){if(!state.students.length||busy)return false;busy=true;state.generated.clear();$('progress').classList.add('show');$('generateBtn').disabled=true;$('downloadZipBtn').disabled=true;$('statStatus').textContent='Membuat…';$('progressBar').style.width='0%';$('progressPct').textContent='0%';const errors=[];try{for(let i=0;i<state.students.length;i++){const s=state.students[i];$('progressText').textContent=`Membuat ${i+1}/${state.students.length}: ${s.name}`;try{state.generated.set(s.id,await generatePdf(s));}catch(err){console.error('Gagal membuat',s.name,err);errors.push(`${s.name}: ${err.message||'gagal membuat PDF'}`);}const pct=Math.round((i+1)/state.students.length*100);$('progressBar').style.width=pct+'%';$('progressPct').textContent=pct+'%';}const ok=state.generated.size;$('progressText').textContent=errors.length?`${ok} selesai, ${errors.length} gagal.`:'Semua rapor selesai.';$('statStatus').textContent=errors.length?`${ok} berhasil`:'Selesai';$('downloadZipBtn').disabled=!ok;if(showSuccess){if(errors.length)showMsg(`${ok} rapor berhasil dibuat. ${errors.length} siswa gagal: ${errors.slice(0,3).join(' | ')}`,ok?'success':'error');else showMsg(`${ok} rapor berhasil dibuat.`,'success');}return ok>0;}finally{busy=false;$('generateBtn').disabled=false;}}
-async function downloadZip(){try{getLibraries();}catch(err){showMsg(err.message,'error');return;}if(!state.students.length){showMsg('Upload Excel terlebih dahulu.','info');return;}if(state.generated.size!==state.students.length){const ok=await generateAll(false);if(!ok){showMsg('Tidak ada raport yang berhasil dibuat.','error');return;}}const zip=new JSZip();for(const s of state.students){const blob=state.generated.get(s.id);if(blob)zip.file(`${safeFile(s.name)}.pdf`,blob);}const out=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}},meta=>{const pct=Math.round(meta.percent);$('progress').classList.add('show');$('progressText').textContent='Mengemas ZIP…';$('progressPct').textContent=pct+'%';$('progressBar').style.width=pct+'%';});saveBlob(out,`Rapor_${state.type==='sunny'?'Sunny':state.type==='infant'?'Infant':`Glow_${state.level}`}_Semua.zip`);showMsg(`${state.generated.size} raport berhasil dikemas ke ZIP.`,'success');}
+async function downloadZip(){
+  try{getLibraries();}catch(err){showMsg(err.message,'error');return;}
+  if(!state.students.length){showMsg('Upload Excel terlebih dahulu.','info');return;}
+  const selectedStudents=getFilteredStudents();
+  if(!selectedStudents.length){showMsg('Tidak ada siswa pada filter yang dipilih.','info');return;}
+  const missing=selectedStudents.some(s=>!state.generated.has(s.id));
+  if(missing){const ok=await generateAll(false);if(!ok){showMsg('Tidak ada rapor yang berhasil dibuat.','error');return;}}
+  const zip=new JSZip();let added=0;
+  for(const s of selectedStudents){const blob=state.generated.get(s.id);if(blob){zip.file(`${safeFile(s.name)}.pdf`,blob);added++;}}
+  if(!added){showMsg('Tidak ada rapor yang siap diunduh.','error');return;}
+  const out=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}},meta=>{const pct=Math.round(meta.percent);$('progress').classList.add('show');$('progressText').textContent=`Menyiapkan ZIP untuk ${added} siswa…`;$('progressPct').textContent=pct+'%';$('progressBar').style.width=pct+'%';});
+  const teacher=clean($('teacherFilter')?.value||'');
+  const template=state.type==='sunny'?'Sunny':state.type==='infant'?'Infant':`Glow_${state.level}`;
+  saveBlob(out,`Rapor_${template}${teacher?'_'+safeFile(teacher):''}.zip`);
+  $('progressText').textContent=`${added} rapor siap diunduh.`;
+  showMsg(`${added} rapor berhasil dikemas ke ZIP.`,'success');
+}
 function saveBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);}
 
 loadSignatureStore();
@@ -650,7 +693,8 @@ $('signaturePageSelect')?.addEventListener('change',()=>renderSignatureEditor())
 $('resetBiodataBtn')?.addEventListener('click',resetBiodataConfig);
 $('resetSignatureBtn')?.addEventListener('click',()=>{const kind=signatureUiKind();resetSignatureConfig(kind,signatureUiPageIndex());});
 
-$('reportDate').value=currentDate();$('excelBtn').onclick=()=>$('excelInput').click();$('photoBtn').onclick=()=>$('photoInput').click();$('excelInput').onchange=e=>{if(e.target.files[0])loadExcel(e.target.files[0]);e.target.value='';};$('photoInput').onchange=e=>{loadPhotos([...e.target.files]);e.target.value='';};$('manualPhotoBtn').onclick=()=>{if(state.selected)chooseManualPhoto(state.selected);};$('manualPhotoInput').onchange=e=>{const f=e.target.files[0];if(!f||!state.selected)return;const old=state.manualPhotos.get(state.selected.id);if(old?.url)URL.revokeObjectURL(old.url);state.manualPhotos.set(state.selected.id,{file:f,url:URL.createObjectURL(f)});markDirty();state.generated.delete(state.selected.id);$('photoInfo').textContent=`✓ Foto manual untuk ${state.selected.name}`;$('photoInfo').classList.add('ok');renderStudents();refreshPreview(state.selected);e.target.value='';};$('generateBtn').onclick=()=>generateAll(true);$('downloadZipBtn').onclick=downloadZip;$('downloadOneBtn').onclick=async()=>{if(!state.selected)return;try{const blob=state.generated.get(state.selected.id)||await generatePdf(state.selected);state.generated.set(state.selected.id,blob);saveBlob(blob,`${safeFile(state.selected.name)}.pdf`);}catch(e){showMsg(e.message||'Gagal membuat PDF.','error');}};$('resetBtn').onclick=()=>{if(hasUnsavedWork)showLeaveModal();else location.reload();};
+$('reportDate').value=currentDate();$('excelBtn').onclick=()=>$('excelInput').click();$('photoBtn').onclick=()=>$('photoInput').click();$('excelInput').onchange=e=>{if(e.target.files[0])loadExcel(e.target.files[0]);e.target.value='';};$('photoInput').onchange=e=>{loadPhotos([...e.target.files]);e.target.value='';};$('manualPhotoBtn').onclick=()=>{if(state.selected)chooseManualPhoto(state.selected);};$('manualPhotoInput').onchange=e=>{const f=e.target.files[0];if(!f||!state.selected)return;const old=state.manualPhotos.get(state.selected.id);if(old?.url)URL.revokeObjectURL(old.url);state.manualPhotos.set(state.selected.id,{file:f,url:URL.createObjectURL(f)});markDirty();state.generated.delete(state.selected.id);$('photoInfo').textContent=`✓ Foto manual untuk ${state.selected.name}`;$('photoInfo').classList.add('ok');renderStudents();refreshPreview(state.selected);e.target.value='';};$('generateBtn').onclick=()=>generateAll(true);$('downloadZipBtn').onclick=downloadZip;
+$('teacherFilter')?.addEventListener('change',()=>{const filtered=getFilteredStudents();state.selected=filtered[0]||null;if(!state.selected){$('previewTitle').textContent='Preview rapor';$('previewMeta').textContent='Tidak ada siswa pada filter ini.';$('previewFrame').innerHTML='<div class="preview-placeholder">Tidak ada siswa untuk ditampilkan.</div>';$('downloadOneBtn').disabled=true;$('manualPhotoBtn').disabled=true;}updateUI();});$('downloadOneBtn').onclick=async()=>{if(!state.selected)return;try{const blob=state.generated.get(state.selected.id)||await generatePdf(state.selected);state.generated.set(state.selected.id,blob);saveBlob(blob,`${safeFile(state.selected.name)}.pdf`);}catch(e){showMsg(e.message||'Gagal membuat PDF.','error');}};$('resetBtn').onclick=()=>{if(hasUnsavedWork)showLeaveModal();else location.reload();};
 ['city','reportDate','period','className','teacher','principal'].forEach(id=>$(id).addEventListener('input',()=>{markDirty();state.generated.clear();$('downloadZipBtn').disabled=true;if(state.selected)refreshPreview(state.selected);}));
 // Proteksi keluar halaman.
 // Browser tetap dapat menampilkan dialog native untuk refresh/tutup tab dari UI browser.
@@ -666,7 +710,7 @@ document.addEventListener('click', e=>{
   const link=e.target.closest('a[href]');
   if(!link || !hasUnsavedWork || allowUnload)return;
   const href=link.getAttribute('href') || '';
-  if(!href || href.startsWith('#') || link.target==='_blank')return;
+  if(!href || href.startsWith('#') || href.startsWith('blob:') || href.startsWith('data:') || link.hasAttribute('download') || link.target==='_blank')return;
   e.preventDefault();
   pendingNavigation={type:'url',url:link.href};
   showLeaveModal();

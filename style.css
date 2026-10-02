@@ -224,3 +224,49 @@ button,input{font:inherit}button{cursor:pointer}
 @media(max-width:900px){.workspace-head{flex-direction:column}.workspace-badge{min-width:0}.stagebar{grid-template-columns:1fr;gap:7px}.stage-line{display:none}.stage{opacity:.75}.stage.current{opacity:1}.result-command{align-items:flex-start;flex-direction:column}.result-chip{align-self:flex-start}}
 @media(max-width:620px){.workspace-hero{padding:21px 18px}.workspace-head h2{font-size:25px}.workspace-badge{width:100%}.stage{padding:4px 0}.result-command{padding:17px}.result-command h3{font-size:16px}.export-card{padding:30px 22px 24px}.export-card h2{font-size:24px}}
 @media(prefers-reduced-motion:reduce){.badge-dot,.metric-pop,.export-success,.export-orbit>span,.export-orbit i,.is-generating{animation:none!important;transition:none!important}}
+
+/* Final UI polish: lebih tenang, jelas, dan terasa seperti aplikasi kerja sehari-hari */
+.workspace-hero{background:#fff;color:#172033;border-color:#e7e9ee;box-shadow:0 12px 32px rgba(16,24,40,.06);padding:22px 25px 18px}
+.workspace-hero:before,.workspace-hero:after{display:none}
+.workspace-kicker{color:#a16207;letter-spacing:.9px;font-size:9px}
+.workspace-kicker i{background:#f59e0b;box-shadow:none}
+.workspace-head h2{color:#172033;font-size:30px;letter-spacing:-1px}
+.workspace-head h2 span{color:#c66b00}
+.workspace-head p{color:#667085}
+.workspace-badge{min-width:140px;padding:10px 12px;border:1px solid #e8eaef;background:#fafbfc;backdrop-filter:none;border-radius:12px}
+.workspace-badge b{color:#344054;font-size:9px}
+.workspace-badge small{color:#98a2b3}
+.badge-dot{background:#20a464;box-shadow:none;animation:none}
+.stagebar{margin-top:20px;gap:11px}
+.stage{opacity:.62}
+.stage span{width:29px;height:29px;border-radius:9px;background:#f7f8fa;border-color:#e5e7eb;color:#667085}
+.stage.active span{background:#fff4df;border-color:#ffc46b;color:#a65b00;box-shadow:none}
+.stage.current{transform:none}
+.stage b{color:#344054;letter-spacing:.5px}
+.stage small{color:#98a2b3}
+.stage-line{background:#e8eaee}
+.stage-line i{background:#f2a51a}
+.result-command{background:#fff;padding:18px 20px 14px}
+.result-kicker{letter-spacing:1px;color:#a16207}
+.result-command h3{font-size:17px}
+.student-head{align-items:flex-end;gap:10px}
+.student-head>div{min-width:0}
+.student-filter{display:flex;align-items:center;gap:6px;flex:none}
+.student-filter span{font-size:9px;color:#98a2b3}
+.student-filter select{height:31px;max-width:145px;border:1px solid #e1e5ea;border-radius:9px;background:#fff;padding:0 26px 0 9px;font:inherit;font-size:10px;color:#344054;outline:none}
+.student-filter select:focus{border-color:#f1b65b;box-shadow:0 0 0 3px rgba(245,158,11,.09)}
+.preview-head{align-items:flex-end}
+.preview-note{font-size:9px;color:#98a2b3;white-space:nowrap}
+.preview-actions .btn{box-shadow:none!important}
+.export-orbit{box-shadow:none}
+.export-orbit>span{animation:none}
+@media(max-width:700px){
+  .workspace-head{flex-direction:column}
+  .workspace-badge{width:100%}
+  .stagebar{grid-template-columns:1fr;gap:8px}
+  .stage-line{display:none}
+  .student-head{align-items:stretch;flex-direction:column}
+  .student-filter{justify-content:space-between}
+  .student-filter select{max-width:none;flex:1}
+  .preview-note{display:none}
+}
