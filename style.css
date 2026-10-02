@@ -110,3 +110,91 @@
   .selection-actions{width:100%;justify-content:flex-end}
   .zip-action{width:100%}.zip-action select{flex:1}.zip-action .btn{flex:1.1}
 }
+
+/* =========================================================
+   DOWNLOAD / GENERATION / SPLASH — refined interaction layer
+   ========================================================= */
+body.modal-open{overflow:hidden}
+
+/* Two clean download actions + contextual ZIP menu */
+.preview-actions{position:relative;gap:8px}
+.download-pdf-btn,.download-zip-btn{min-width:112px}
+.download-menu{position:relative;z-index:20}
+.download-zip-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px}
+.download-zip-btn span{font-size:12px;line-height:1;opacity:.7;transform:translateY(-1px)}
+.download-menu-popover{position:absolute;right:0;bottom:calc(100% + 10px);width:255px;padding:7px;border:1px solid #e6e8ec;border-radius:16px;background:rgba(255,255,255,.98);box-shadow:0 24px 55px rgba(16,24,40,.16);backdrop-filter:blur(18px);opacity:0;visibility:hidden;pointer-events:none;transform:translateY(8px) scale(.98);transition:.18s ease;transform-origin:bottom right}
+.download-menu-popover.show{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+.download-menu-head{padding:9px 10px 8px;border-bottom:1px solid #edf0f3;margin-bottom:5px}
+.download-menu-head b{display:block;font-size:10px;color:#172033}
+.download-menu-head small{display:block;margin-top:3px;font-size:7.5px;line-height:1.4;color:#98a2b3}
+.download-menu-popover>button{width:100%;display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:center;text-align:left;border:0;background:transparent;border-radius:11px;padding:9px 8px;cursor:pointer;color:#172033}
+.download-menu-popover>button:hover{background:#f8f9fb}
+.download-menu-popover>button>span:first-child{width:27px;height:27px;display:grid;place-items:center;border:1px solid #e8ebef;border-radius:9px;background:#fff;color:#8b5b12;font-size:10px}
+.download-menu-popover>button b{display:block;font-size:8.5px;font-weight:800}
+.download-menu-popover>button small{display:block;margin-top:2px;font-size:7px;color:#98a2b3}
+
+/* Generation overlay */
+.generation-modal{position:fixed;inset:0;z-index:1100;display:grid;place-items:center;padding:22px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease}
+.generation-modal.show{opacity:1;visibility:visible;pointer-events:auto}
+.generation-backdrop{position:absolute;inset:0;background:rgba(14,20,32,.48);backdrop-filter:blur(10px)}
+.generation-card{position:relative;width:min(430px,100%);padding:30px 30px 24px;border:1px solid rgba(255,255,255,.72);border-radius:26px;background:rgba(255,255,255,.97);box-shadow:0 35px 100px rgba(0,0,0,.22);transform:translateY(12px) scale(.98);transition:.24s ease;overflow:hidden}
+.generation-modal.show .generation-card{transform:none}
+.generation-scene{position:relative;height:92px;margin:-5px -4px 10px;border-radius:18px;background:linear-gradient(180deg,#fffaf0,#fff);overflow:hidden}
+.generation-scene:before,.generation-scene:after{content:"";position:absolute;border-radius:50%;filter:blur(2px);opacity:.45}
+.generation-scene:before{width:120px;height:120px;left:-35px;top:-55px;background:radial-gradient(circle,#ffd889,transparent 70%)}
+.generation-scene:after{width:140px;height:140px;right:-55px;bottom:-80px;background:radial-gradient(circle,#ffe9b7,transparent 70%)}
+.gen-path{position:absolute;left:28px;right:28px;top:48px;height:22px;border-top:1.5px dashed #f2b557;border-radius:50%;transform:rotate(-3deg)}
+.gen-bee{position:absolute;left:25px;top:24px;font-size:28px;filter:drop-shadow(0 7px 7px rgba(16,24,40,.12));animation:beeFlight 2.8s cubic-bezier(.45,.05,.55,.95) infinite}
+.gen-flower{position:absolute;color:#f5b23e;font-size:12px;opacity:.65;animation:flowerFloat 2.2s ease-in-out infinite}
+.flower-a{right:36px;top:22px}.flower-b{right:66px;top:55px;animation-delay:.7s}
+.generation-kicker{font-size:7px;letter-spacing:1.5px;font-weight:900;color:#a76508;text-transform:uppercase}
+.generation-card h2{font-size:22px;letter-spacing:-.55px;margin:7px 0 5px;color:#172033}
+.generation-card p{margin:0;color:#8b95a4;font-size:9px;line-height:1.55}
+.generation-current{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:21px;font-size:8.5px;color:#344054}
+.generation-current span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.generation-current b{color:#a76508;font-size:9px}
+.generation-bar{height:7px;margin-top:8px;border-radius:99px;background:#eef0f3;overflow:hidden}
+.generation-bar i{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#f59e0b,#ffc861);transition:width .18s ease}
+.generation-foot{display:flex;justify-content:space-between;gap:12px;margin-top:9px;color:#a0a8b4;font-size:7px}
+
+/* A more cinematic first-open experience */
+.app-splash{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;min-height:100svh;z-index:99999;background:#fbfcfe!important;display:grid!important;place-items:center!important;overflow:hidden}
+.app-splash.hide{opacity:0!important;visibility:hidden;pointer-events:none;transition:opacity .7s ease,visibility .7s ease}
+.splash-scene{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.splash-scene:before{content:"";position:absolute;left:50%;top:50%;width:min(68vw,760px);height:min(68vw,760px);transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,196,83,.15),rgba(255,196,83,.035) 42%,transparent 70%)}
+.splash-orb{position:absolute;border-radius:50%;border:1px solid rgba(245,158,11,.14);animation:orbDrift 7s ease-in-out infinite}
+.orb-a{width:520px;height:520px;left:50%;top:50%;margin:-260px 0 0 -260px}.orb-b{width:720px;height:720px;left:50%;top:50%;margin:-360px 0 0 -360px;animation-delay:-2.5s;opacity:.55}
+.splash-dot{position:absolute;width:5px;height:5px;border-radius:50%;background:#f5b64e;opacity:.5;animation:dotFloat 4s ease-in-out infinite}
+.dot-a{left:23%;top:35%}.dot-b{right:24%;top:29%;animation-delay:1s}.dot-c{right:30%;bottom:28%;animation-delay:2s}
+.splash-path{position:absolute;width:330px;height:150px;left:50%;top:50%;margin:-75px 0 0 -165px;border:1px dashed rgba(245,158,11,.26);border-left-color:transparent;border-bottom-color:transparent;border-radius:50%;transform:rotate(-18deg)}
+.splash-bee{position:absolute;left:50%;top:50%;font-size:28px;filter:drop-shadow(0 10px 9px rgba(16,24,40,.1));animation:splashBee 4.8s cubic-bezier(.45,.05,.55,.95) infinite}
+.splash-content{position:relative!important;z-index:2!important;text-align:center;width:min(360px,calc(100vw - 40px));display:flex;flex-direction:column;align-items:center}
+.splash-brand-mark{width:100px;height:100px;border-radius:30px;background:rgba(255,255,255,.94);border:1px solid #e9ecf0;display:grid;place-items:center;box-shadow:0 22px 60px rgba(16,24,40,.11);animation:splashMarkIn .8s cubic-bezier(.2,.8,.2,1) both}
+.splash-brand-mark img{width:77px;height:77px;object-fit:contain}
+.splash-kicker{font-size:7px;letter-spacing:1.8px;color:#a76508;font-weight:900;margin-top:19px;animation:splashTextIn .65s .15s ease both}
+.splash-content h2{font-size:30px;letter-spacing:-1px;margin:7px 0 5px;color:#172033;animation:splashTextIn .65s .23s ease both}
+.splash-content p{font-size:9px;color:#8b95a4;margin:0;animation:splashTextIn .65s .31s ease both}
+.splash-progress{width:170px;height:4px;margin:20px auto 0;border-radius:99px;background:#eceff2;overflow:hidden}
+.splash-progress i{display:block;width:38%;height:100%;border-radius:inherit;background:#f59e0b;animation:splashProgress 2.9s cubic-bezier(.3,.1,.2,1) infinite}
+.splash-loading-label{width:170px;display:flex;justify-content:space-between;margin-top:8px;font-size:7px;color:#a0a8b4}
+.splash-loading-label b{color:#f59e0b;animation:statusPulse 1s ease-in-out infinite}
+
+@keyframes beeFlight{0%{transform:translate(0,0) rotate(-5deg)}25%{transform:translate(90px,-10px) rotate(5deg)}50%{transform:translate(190px,12px) rotate(-3deg)}75%{transform:translate(275px,-8px) rotate(6deg)}100%{transform:translate(355px,4px) rotate(-2deg)}}
+@keyframes flowerFloat{0%,100%{transform:translateY(2px);opacity:.35}50%{transform:translateY(-5px);opacity:.75}}
+@keyframes orbDrift{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.025) rotate(5deg)}}
+@keyframes dotFloat{0%,100%{transform:translateY(0);opacity:.2}50%{transform:translateY(-12px);opacity:.65}}
+@keyframes splashBee{0%{transform:translate(-180px,65px) rotate(-7deg)}25%{transform:translate(55px,-35px) rotate(5deg)}50%{transform:translate(155px,45px) rotate(-2deg)}75%{transform:translate(-40px,95px) rotate(6deg)}100%{transform:translate(-180px,65px) rotate(-7deg)}}
+@keyframes splashMarkIn{from{opacity:0;transform:translateY(16px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes splashTextIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes splashProgress{0%{transform:translateX(-130%)}100%{transform:translateX(360%)}}
+
+@media(max-width:620px){
+  .download-menu-popover{right:0;width:min(280px,calc(100vw - 34px))}
+  .generation-card{padding:22px 20px 20px;border-radius:21px}
+  .generation-scene{height:78px}
+  .splash-brand-mark{width:86px;height:86px}.splash-brand-mark img{width:66px;height:66px}.splash-content h2{font-size:26px}
+}
+@media(prefers-reduced-motion:reduce){.gen-bee,.gen-flower,.splash-orb,.splash-dot,.splash-bee,.splash-brand-mark,.splash-kicker,.splash-content h2,.splash-content p,.splash-progress i{animation:none!important}.splash-progress i{width:100%}}
+.progress{display:none!important}
+.download-menu-popover>button.disabled{opacity:.42;cursor:not-allowed}
+.download-menu-popover>button.disabled:hover{background:transparent}

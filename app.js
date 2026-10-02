@@ -615,13 +615,12 @@ function updateTeacherFilter(){
   if(names.includes(current))select.value=current;
 }
 function updateSelectionUI(){
-  const count=[...state.checked].filter(id=>state.students.some(s=>s.id===id)).length;
+  const visible=getFilteredStudents();
+  const count=visible.filter(s=>state.checked.has(s.id)).length;
   const el=$('selectionCount');
   if(el)el.textContent=`${count} dipilih`;
-  const scope=$('downloadScope');
   const zip=$('downloadZipBtn');
   if(zip)zip.disabled=!state.students.length;
-  if(scope && count===0 && scope.value==='selected')scope.value='visible';
 }
 function updateSettingsOverview(){
   const b=getBiodataConfig();
@@ -733,28 +732,128 @@ async function generatePdf(student){getLibraries();const cfg=state.type==='sunny
     }}
 const note=clean(student.note);if(note){const p=pages[pages.length-1];const b=noteBox(kind,pages.length-1);writeTransparent(p,b,note,{size:10.5});}return new Blob([await doc.save()],{type:'application/pdf'});}
 
-async function generateAll(showSuccess=true){if(!state.students.length||busy)return false;busy=true;state.generated.clear();$('progress').classList.add('show');$('generateBtn').disabled=true;$('downloadZipBtn').disabled=true;$('statStatus').textContent='Membuat…';$('progressBar').style.width='0%';$('progressPct').textContent='0%';const errors=[];try{for(let i=0;i<state.students.length;i++){const s=state.students[i];$('progressText').textContent=`Membuat ${i+1}/${state.students.length}: ${s.name}`;try{state.generated.set(s.id,await generatePdf(s));}catch(err){console.error('Gagal membuat',s.name,err);errors.push(`${s.name}: ${err.message||'gagal membuat PDF'}`);}const pct=Math.round((i+1)/state.students.length*100);$('progressBar').style.width=pct+'%';$('progressPct').textContent=pct+'%';}const ok=state.generated.size;$('progressText').textContent=errors.length?`${ok} selesai, ${errors.length} gagal.`:'Semua rapor selesai.';$('statStatus').textContent=errors.length?`${ok} berhasil`:'Selesai';$('downloadZipBtn').disabled=!ok;if(showSuccess){if(errors.length)showMsg(`${ok} rapor berhasil dibuat. ${errors.length} siswa gagal: ${errors.slice(0,3).join(' | ')}`,ok?'success':'error');else showMsg(`${ok} rapor berhasil dibuat.`,'success');}return ok>0;}finally{busy=false;$('generateBtn').disabled=false;}}
-async function downloadZip(){
+function openGenerationModal(total,title='Sedang membuat rapor',sub='Menyiapkan dokumen siswa satu per satu.'){
+  const modal=$('generationModal');
+  if(!modal)return;
+  $('generationTitle').textContent=title;
+  $('generationSubtext').textContent=sub;
+  $('generationText').textContent='Menyiapkan…';
+  $('generationPct').textContent='0%';
+  $('generationBar').style.width='0%';
+  $('generationCount').textContent=`0 dari ${total} siswa`;
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+  document.body.classList.add('modal-open');
+}
+function updateGenerationModal(current,total,text,pct){
+  if(!$('generationModal'))return;
+  $('generationText').textContent=text||'Memproses…';
+  $('generationPct').textContent=`${pct}%`;
+  $('generationBar').style.width=`${pct}%`;
+  $('generationCount').textContent=`${current} dari ${total} siswa`;
+}
+function closeGenerationModal(){
+  const modal=$('generationModal');
+  if(!modal)return;
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+  document.body.classList.remove('modal-open');
+}
+function openExportSuccess(count,label='siswa',detail='Dokumen sudah siap digunakan.'){
+  const modal=$('exportSuccess');
+  if(!modal)return;
+  $('exportStudentCount').textContent=count;
+  $('exportSuccessText').textContent=detail;
+  const heading=modal.querySelector('h2');
+  if(heading)heading.textContent=`${count} ${label} siap diunduh.`;
+  const kicker=modal.querySelector('.export-kicker');
+  if(kicker)kicker.textContent='SELESAI';
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+}
+
+async function generateAll(showSuccess=true){
+  if(!state.students.length||busy)return false;
+  busy=true;
+  state.generated.clear();
+  $('generateBtn').disabled=true;
+  $('downloadZipBtn').disabled=true;
+  $('statStatus').textContent='Membuat…';
+  openGenerationModal(state.students.length,'Sedang membuat rapor','Setiap siswa diproses satu per satu.');
+  const errors=[];
+  try{
+    for(let i=0;i<state.students.length;i++){
+      const s=state.students[i];
+      const pct=Math.round((i+1)/state.students.length*100);
+      updateGenerationModal(i+1,state.students.length,`Membuat rapor ${s.name}`,pct);
+      try{state.generated.set(s.id,await generatePdf(s));}
+      catch(err){console.error('Gagal membuat',s.name,err);errors.push(`${s.name}: ${err.message||'gagal membuat PDF'}`);}
+      updateGenerationModal(i+1,state.students.length,errors.length&&i===state.students.length-1?`${state.generated.size} selesai, ${errors.length} gagal.`:`Membuat rapor ${s.name}`,pct);
+      await new Promise(r=>requestAnimationFrame(r));
+    }
+    const ok=state.generated.size;
+    $('statStatus').textContent=errors.length?`${ok} berhasil`:'Selesai';
+    $('downloadZipBtn').disabled=!ok;
+    closeGenerationModal();
+    if(showSuccess){
+      if(errors.length) openExportSuccess(ok,'rapor',`${ok} rapor berhasil dibuat. ${errors.length} siswa perlu diperiksa kembali.`);
+      else openExportSuccess(ok,'rapor',`${ok} dokumen sudah dibuat dan siap diunduh.`);
+    }
+    return ok>0;
+  }finally{
+    busy=false;
+    $('generateBtn').disabled=false;
+    closeGenerationModal();
+  }
+}
+function getDownloadSelection(scope){
+  const teacher=clean($('teacherFilter')?.value||'');
+  const visible=getFilteredStudents();
+  if(scope==='selected') return {students:teacher?state.students.filter(s=>state.checked.has(s.id)&&getTeacherName(s)===teacher):state.students.filter(s=>state.checked.has(s.id)),label:teacher?`siswa yang dipilih dari ${teacher}`:'siswa yang dipilih'};
+  if(scope==='visible') return {students:visible,label:teacher?`siswa ${teacher}`:'semua siswa yang tampil'};
+  return {students:state.students.slice(),label:'semua siswa'};
+}
+async function downloadZip(scope='selected'){
   try{getLibraries();}catch(err){showMsg(err.message,'error');return;}
   if(!state.students.length){showMsg('Upload Excel terlebih dahulu.','info');return;}
-  const scope=$('downloadScope')?.value||'selected';
-  let selectedStudents=[];
-  if(scope==='selected') selectedStudents=state.students.filter(s=>state.checked.has(s.id));
-  else if(scope==='visible') selectedStudents=getFilteredStudents();
-  else selectedStudents=state.students.slice();
-  if(!selectedStudents.length){showMsg(scope==='selected'?'Belum ada siswa yang dipilih. Centang siswa dari daftar terlebih dahulu.':'Tidak ada siswa untuk diunduh.','info');return;}
-  const missing=selectedStudents.some(s=>!state.generated.has(s.id));
-  if(missing){const ok=await generateAll(false);if(!ok){showMsg('Tidak ada rapor yang berhasil dibuat.','error');return;}}
+  const selection=getDownloadSelection(scope);
+  const selectedStudents=selection.students;
+  if(!selectedStudents.length){
+    showMsg(scope==='selected'?'Belum ada siswa yang dipilih pada filter ini. Centang siswa yang ingin diunduh terlebih dahulu.':'Tidak ada siswa untuk diunduh.','info');
+    return;
+  }
+  const missingStudents=selectedStudents.filter(s=>!state.generated.has(s.id));
+  if(missingStudents.length){
+    openGenerationModal(missingStudents.length,'Membuat file yang dipilih',`Ada ${missingStudents.length} rapor yang belum dibuat. Hanya pilihan ini yang akan diproses.`);
+    for(let i=0;i<missingStudents.length;i++){
+      const s=missingStudents[i];
+      const pct=Math.round((i+1)/missingStudents.length*100);
+      updateGenerationModal(i+1,missingStudents.length,`Membuat rapor ${s.name}`,pct);
+      try{state.generated.set(s.id,await generatePdf(s));}
+      catch(err){console.error('Gagal membuat',s.name,err);}
+      await new Promise(r=>requestAnimationFrame(r));
+    }
+    closeGenerationModal();
+  }
   const zip=new JSZip();let added=0;
-  for(const s of selectedStudents){const blob=state.generated.get(s.id);if(blob){zip.file(`${safeFile(s.name)}.pdf`,blob);added++;}}
-  if(!added){showMsg('Tidak ada rapor yang siap diunduh.','error');return;}
-  const out=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}},meta=>{const pct=Math.round(meta.percent);$('progress').classList.add('show');$('progressText').textContent=`Menyiapkan ZIP untuk ${added} siswa…`;$('progressPct').textContent=pct+'%';$('progressBar').style.width=pct+'%';});
+  openGenerationModal(selectedStudents.length,'Menyiapkan file ZIP',`Mengumpulkan ${selection.label}.`);
+  for(let i=0;i<selectedStudents.length;i++){
+    const s=selectedStudents[i];
+    const blob=state.generated.get(s.id);
+    if(blob)zip.file(`${safeFile(s.name)}.pdf`,blob);
+    const pct=Math.round((i+1)/selectedStudents.length*100);
+    updateGenerationModal(i+1,selectedStudents.length,`Menambahkan ${s.name}`,pct);
+    if(blob)added++;
+    await new Promise(r=>requestAnimationFrame(r));
+  }
+  if(!added){closeGenerationModal();showMsg('Tidak ada rapor yang siap diunduh.','error');return;}
+  const out=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}},meta=>{const pct=Math.round(meta.percent);updateGenerationModal(selectedStudents.length,selectedStudents.length,'Menyusun ZIP…',pct);});
   const teacher=clean($('teacherFilter')?.value||'');
   const template=state.type==='sunny'?'Sunny':state.type==='infant'?'Infant':`Glow_${state.level}`;
   const suffix=scope==='selected'?'_Terpilih':scope==='visible'?(teacher?`_${safeFile(teacher)}`:'_Tampilan'):'_Semua';
   saveBlob(out,`Rapor_${template}${suffix}.zip`);
-  $('progressText').textContent=`${added} rapor siap diunduh.`;
-  showMsg(`${added} rapor berhasil dikemas ke ZIP.`,'success');
+  closeGenerationModal();
+  openExportSuccess(added,'dokumen',teacher&&scope!=='all'?`${added} dokumen untuk ${teacher} sudah dikemas ke ZIP.`:`${added} dokumen sudah dikemas ke ZIP dan siap digunakan.`);
 }
 
 let downloadInProgress=false;
@@ -771,6 +870,28 @@ function saveBlob(blob,name){
   setTimeout(()=>{URL.revokeObjectURL(url);downloadInProgress=false;},1800);
 }
 
+function toggleDownloadMenu(){
+  const menu=$('downloadMenuPopover');
+  if(!menu)return;
+  const open=menu.classList.toggle('show');
+  menu.setAttribute('aria-hidden',String(!open));
+  if(open){
+    const teacher=clean($('teacherFilter')?.value||'');
+    const visible=getFilteredStudents().length;
+    $('downloadVisibleLabel').textContent=teacher?`${visible} siswa · ${teacher}`:`${visible} siswa yang tampil`;
+    $('downloadMenuHint').textContent=teacher?`Filter aktif: ${teacher}. Pilihan siswa dibatasi ke guru ini.`:'Pilih cakupan file yang ingin disertakan.';
+    const allBtn=document.querySelector('[data-download-scope="all"]');
+    if(allBtn){
+      allBtn.disabled=!!teacher;
+      allBtn.classList.toggle('disabled',!!teacher);
+      const note=allBtn.querySelector('small');
+      if(note)note.textContent=teacher?'Pilih “Semua guru” untuk membuka':'Semua data di Excel';
+    }
+  }
+}
+function closeDownloadMenu(){const menu=$('downloadMenuPopover');if(!menu)return;menu.classList.remove('show');menu.setAttribute('aria-hidden','true');}
+document.addEventListener('click',e=>{if(!e.target.closest('#downloadMenu'))closeDownloadMenu();});
+
 loadSignatureStore();
 loadBiodataStore();
 renderSignatureEditor();
@@ -779,7 +900,7 @@ $('resetBiodataBtn')?.addEventListener('click',()=>{resetBiodataConfig();updateS
 $('resetSignatureBtn')?.addEventListener('click',()=>{const kind=signatureUiKind();resetSignatureConfig(kind,signatureUiPageIndex());});
 
 $('reportDate').value=currentDate();$('excelBtn').onclick=()=>$('excelInput').click();$('photoBtn').onclick=()=>$('photoInput').click();$('excelInput').onchange=e=>{if(e.target.files[0])loadExcel(e.target.files[0]);e.target.value='';};$('photoInput').onchange=e=>{loadPhotos([...e.target.files]);e.target.value='';};$('manualPhotoBtn').onclick=()=>{if(state.selected)chooseManualPhoto(state.selected);};$('manualPhotoInput').onchange=e=>{const f=e.target.files[0];if(!f||!state.selected)return;const old=state.manualPhotos.get(state.selected.id);if(old?.url)URL.revokeObjectURL(old.url);state.manualPhotos.set(state.selected.id,{file:f,url:URL.createObjectURL(f)});markDirty();state.generated.delete(state.selected.id);$('photoInfo').textContent=`✓ Foto manual untuk ${state.selected.name}`;$('photoInfo').classList.add('ok');renderStudents();refreshPreview(state.selected);e.target.value='';};$('generateBtn').onclick=()=>generateAll(true);$('downloadZipBtn').onclick=downloadZip;
-$('teacherFilter')?.addEventListener('change',()=>{const filtered=getFilteredStudents();state.selected=filtered[0]||null;if(!state.selected){$('previewTitle').textContent='Preview rapor';$('previewMeta').textContent='Tidak ada siswa pada filter ini.';$('previewFrame').innerHTML='<div class="preview-placeholder">Tidak ada siswa untuk ditampilkan.</div>';$('downloadOneBtn').disabled=true;$('manualPhotoBtn').disabled=true;}updateUI();});$('selectVisibleBtn')?.addEventListener('click',()=>{for(const s of getFilteredStudents())state.checked.add(s.id);renderStudents();updateSelectionUI();});$('clearSelectionBtn')?.addEventListener('click',()=>{state.checked.clear();renderStudents();updateSelectionUI();});$('downloadScope')?.addEventListener('change',()=>updateSelectionUI());$('downloadOneBtn').onclick=async()=>{if(!state.selected)return;try{const blob=state.generated.get(state.selected.id)||await generatePdf(state.selected);state.generated.set(state.selected.id,blob);saveBlob(blob,`${safeFile(state.selected.name)}.pdf`);}catch(e){showMsg(e.message||'Gagal membuat PDF.','error');}};$('resetBtn').onclick=()=>{if(hasUnsavedWork)showLeaveModal();else location.reload();};
+$('teacherFilter')?.addEventListener('change',()=>{const filtered=getFilteredStudents();state.selected=filtered[0]||null;if(!state.selected){$('previewTitle').textContent='Preview rapor';$('previewMeta').textContent='Tidak ada siswa pada filter ini.';$('previewFrame').innerHTML='<div class="preview-placeholder">Tidak ada siswa untuk ditampilkan.</div>';$('downloadOneBtn').disabled=true;$('manualPhotoBtn').disabled=true;}updateUI();});$('selectVisibleBtn')?.addEventListener('click',()=>{for(const s of getFilteredStudents())state.checked.add(s.id);renderStudents();updateSelectionUI();});$('clearSelectionBtn')?.addEventListener('click',()=>{for(const s of getFilteredStudents())state.checked.delete(s.id);renderStudents();updateSelectionUI();});$('downloadOneBtn').onclick=async()=>{if(!state.selected)return;try{const blob=state.generated.get(state.selected.id)||await generatePdf(state.selected);state.generated.set(state.selected.id,blob);saveBlob(blob,`${safeFile(state.selected.name)}.pdf`);openExportSuccess(1,'dokumen',`Rapor ${state.selected.name} sudah diunduh.`);}catch(e){showMsg(e.message||'Gagal membuat PDF.','error');}};$('downloadZipBtn').onclick=()=>toggleDownloadMenu();document.querySelectorAll('[data-download-scope]').forEach(btn=>btn.addEventListener('click',()=>{if(btn.disabled)return;const scope=btn.dataset.downloadScope;closeDownloadMenu();downloadZip(scope);}));$('resetBtn').onclick=()=>{if(hasUnsavedWork)showLeaveModal();else location.reload();};
 ['city','reportDate','period','className','teacher','principal'].forEach(id=>$(id).addEventListener('input',()=>{markDirty();state.generated.clear();$('downloadZipBtn').disabled=true;if(state.selected)refreshPreview(state.selected);}));
 // Proteksi keluar halaman.
 // Browser tetap dapat menampilkan dialog native untuk refresh/tutup tab dari UI browser.

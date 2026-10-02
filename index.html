@@ -10,14 +10,19 @@
 </head>
 <body>
 <div class="app-splash" id="appSplash" aria-hidden="true">
-  <div class="splash-glow"></div>
-  <div class="splash-particles" aria-hidden="true"></div>
+  <div class="splash-scene" aria-hidden="true">
+    <span class="splash-orb orb-a"></span><span class="splash-orb orb-b"></span>
+    <span class="splash-dot dot-a"></span><span class="splash-dot dot-b"></span><span class="splash-dot dot-c"></span>
+    <span class="splash-path"></span>
+    <span class="splash-bee" aria-hidden="true">🐝</span>
+  </div>
   <div class="splash-content">
-    <div class="splash-logo-wrap"><img src="assets/img/logo/BLC LOGOS.png" alt="Bumblebee Learning Center"></div>
-    <div class="splash-kicker">VAYTES.CO · BUMBLEBEE LEARNING CENTER</div>
+    <div class="splash-brand-mark"><img src="assets/img/logo/BLC LOGOS.png" alt="Bumblebee Learning Center"></div>
+    <div class="splash-kicker">BUMBLEBEE LEARNING CENTER</div>
     <h2>Rapor Generator</h2>
-    <p>Menyiapkan ruang kerja rapor…</p>
-    <div class="splash-loader"><i></i></div>
+    <p>Menyiapkan ruang kerja untuk semester ini</p>
+    <div class="splash-progress"><i></i></div>
+    <div class="splash-loading-label"><span>Membuka workspace</span><b>●</b></div>
   </div>
 </div>
 <header class="topbar">
@@ -167,7 +172,7 @@
           <div class="preview">
             <div class="preview-head"><div><span class="preview-kicker">PREVIEW</span><h3 id="previewTitle">Preview rapor</h3><small id="previewMeta">Pilih siswa</small></div><span class="preview-note">Tampilan sebelum diunduh</span></div>
             <div class="preview-frame" id="previewFrame"><div class="preview-placeholder">Preview akan muncul setelah Excel terbaca.</div></div>
-            <div class="preview-actions"><button class="btn btn-light" id="manualPhotoBtn" disabled>📷 Tambah foto</button><button class="btn btn-light" id="downloadOneBtn" disabled>Unduh PDF</button><div class="zip-action"><select id="downloadScope" aria-label="Pilihan siswa untuk ZIP"><option value="selected">Yang dipilih</option><option value="visible">Yang tampil</option><option value="all">Semua siswa</option></select><button class="btn btn-primary" id="downloadZipBtn" disabled>Unduh ZIP</button></div></div>
+            <div class="preview-actions"><button class="btn btn-light" id="manualPhotoBtn" disabled>📷 Tambah foto</button><button class="btn btn-light download-pdf-btn" id="downloadOneBtn" disabled>Unduh PDF</button><div class="download-menu" id="downloadMenu"><button class="btn btn-primary download-zip-btn" id="downloadZipBtn" disabled>Unduh ZIP <span>⌄</span></button><div class="download-menu-popover" id="downloadMenuPopover" aria-hidden="true"><div class="download-menu-head"><b>Pilih isi ZIP</b><small id="downloadMenuHint">Tentukan siswa yang ingin disertakan.</small></div><button type="button" data-download-scope="selected"><span>✓</span><span><b>Siswa yang dipilih</b><small>Hanya centang yang aktif</small></span></button><button type="button" data-download-scope="visible"><span>⌂</span><span><b>Guru yang sedang dipilih</b><small id="downloadVisibleLabel">Semua siswa yang tampil</small></span></button><button type="button" data-download-scope="all"><span>＋</span><span><b>Semua siswa</b><small>Semua data di Excel</small></span></button></div></div></div>
             <input id="manualPhotoInput" type="file" accept="image/*" hidden>
           </div>
         </div>
@@ -175,14 +180,27 @@
     </section>
   </section>
 </main>
+<div class="generation-modal" id="generationModal" aria-hidden="true">
+  <div class="generation-backdrop"></div>
+  <div class="generation-card" role="dialog" aria-modal="true" aria-labelledby="generationTitle">
+    <div class="generation-scene"><span class="gen-path"></span><span class="gen-bee">🐝</span><span class="gen-flower flower-a">✦</span><span class="gen-flower flower-b">✦</span></div>
+    <div class="generation-kicker">SEBENTAR YA</div>
+    <h2 id="generationTitle">Sedang membuat rapor</h2>
+    <p id="generationSubtext">Menyiapkan dokumen siswa satu per satu.</p>
+    <div class="generation-current"><span id="generationText">Menyiapkan…</span><b id="generationPct">0%</b></div>
+    <div class="generation-bar"><i id="generationBar"></i></div>
+    <div class="generation-foot"><span id="generationCount">0 dari 0 siswa</span><span>Jangan tutup halaman</span></div>
+  </div>
+</div>
+
 <div class="export-success" id="exportSuccess" aria-hidden="true">
   <div class="export-backdrop"></div>
   <div class="export-card">
     <div class="export-orbit"><span>✓</span><i></i><i></i><i></i></div>
-    <span class="export-kicker">EXPORT COMPLETE</span>
+    <span class="export-kicker">SELESAI</span>
     <h2>Semua rapor sudah siap.</h2>
-    <p id="exportSuccessText">File berhasil dibuat dan siap diunduh.</p>
-    <div class="export-metrics"><div><b id="exportStudentCount">0</b><small>SISWA</small></div><div><b>PDF</b><small>SIAP</small></div><div><b>ZIP</b><small>ARSIP</small></div></div>
+    <p id="exportSuccessText">Dokumen sudah dibuat dan siap digunakan.</p>
+    <div class="export-metrics"><div><b id="exportStudentCount">0</b><small>DOKUMEN</small></div><div><b>PDF</b><small>FORMAT</small></div><div><b>✓</b><small>SIAP</small></div></div>
     <button class="btn btn-primary" id="exportCloseBtn">Kembali ke hasil</button>
   </div>
 </div>
@@ -228,72 +246,22 @@
 <script src="app.js"></script>
 <script>
 (() => {
-  const splash = document.getElementById('appSplash');
-  if (!splash) return;
-
-  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-
-  const particles = splash.querySelector('.splash-particles');
-
-  if (particles && !reduce) {
-    for (let i = 0; i < 22; i++) {
-      const dot = document.createElement('i');
-
-      dot.style.setProperty('--x', `${Math.random() * 100}%`);
-      dot.style.setProperty('--d', `${2.5 + Math.random() * 3.5}s`);
-      dot.style.setProperty('--delay', `${Math.random() * 1.8}s`);
-      dot.style.setProperty('--s', `${2 + Math.random() * 5}px`);
-
-      particles.appendChild(dot);
-    }
-  }
-
-  let hidden = false;
-
-  const hide = () => {
-    if (hidden) return;
-
-    hidden = true;
+  const splash=document.getElementById('appSplash');
+  if(!splash)return;
+  const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  let hidden=false;
+  const start=Date.now();
+  const hide=()=>{
+    if(hidden)return;
+    hidden=true;
     splash.classList.add('hide');
-
-    setTimeout(() => {
-      splash.remove();
-    }, 700);
+    setTimeout(()=>splash.remove(),700);
   };
-
-  // =========================================
-  // MINIMUM SPLASH DISPLAY TIME
-  // =========================================
-
-  const minimumTime = reduce ? 2500 : 2800;
-  const startTime = Date.now();
-
-  const hideAfterMinimumTime = () => {
-    const elapsed = Date.now() - startTime;
-    const remaining = Math.max(0, minimumTime - elapsed);
-
-    setTimeout(hide, remaining);
-  };
-
-  /*
-   * Tunggu minimal 2.8 detik.
-   * Setelah itu baru splash boleh ditutup.
-   *
-   * Jadi meskipun semua asset selesai loading
-   * sangat cepat, splash tetap tampil 2.8 detik.
-   */
-
-  if (document.readyState === 'complete') {
-    hideAfterMinimumTime();
-  } else {
-    window.addEventListener('load', hideAfterMinimumTime, { once: true });
-
-    // Fallback:
-    // kalau ada asset/CDN yang gagal atau terlalu lama,
-    // splash tetap tidak akan lebih lama dari batas ini.
-    setTimeout(hideAfterMinimumTime, 5000);
-  }
-
+  const minimum=reduce?2200:3200;
+  const release=()=>setTimeout(hide,Math.max(0,minimum-(Date.now()-start)));
+  if(document.readyState==='complete')release();
+  else window.addEventListener('load',release,{once:true});
+  setTimeout(release,5200);
 })();
 </script>
 
