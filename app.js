@@ -8,7 +8,7 @@ function getLibraries(){
   initPdfColors();
 }
 
-const state={type:'glow',level:'lower',workbook:null,students:[],photos:new Map(),manualPhotos:new Map(),selected:null,generated:new Map(),principalSignature:null,checked:new Set()};
+const state={type:'glow',level:'lower',workbook:null,students:[],photos:new Map(),manualPhotos:new Map(),selected:null,generated:new Map(),principalSignature:null,checked:new Set(),reportsReady:false};
 
 const TEMPLATES={
   glowLower:'assets/templates/Rapor Glow Lower.pdf',
@@ -25,36 +25,36 @@ const SIGNATURE_DEFAULTS={
   glow:{
     lower:{
       p2:{
-        date:{x:515,y:774.3,w:70,h:18,size:10,bold:false,italic:false,underline:false,align:'left'},
+        date:{x:515,y:774.3,w:70,h:18,size:10,bold:true,italic:false,underline:false,align:'left'},
         teacher:{x:290,y:885,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
         principal:{x:459,y:885,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:390,y:810,w:250,h:120}}
       },
       p3:{
-        date:{x:513,y:735,w:70,h:18,size:10.5,bold:false,italic:false,underline:false,align:'left'},
+        date:{x:513,y:735,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
         teacher:{x:315,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
         principal:{x:460,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:390,y:782,w:250,h:120}}
       }
     },
     middle:{
       p2:{
-        date:{x:505,y:775.5,w:70,h:18,size:10.5,bold:false,italic:false,underline:false,align:'left'},
+        date:{x:505,y:775.5,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
         teacher:{x:315,y:880,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
         principal:{x:460,y:880,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:390,y:800,w:250,h:120}}
       },
       p3:{
-        date:{x:513,y:735,w:70,h:18,size:10.5,bold:false,italic:false,underline:false,align:'left'},
+        date:{x:513,y:735,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
         teacher:{x:349,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
         principal:{x:475,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:415,y:785,w:250,h:120}}
       }
     },
     upper:{
       p2:{
-        date:{x:510,y:770,w:70,h:18,size:10.5,bold:false,italic:false,underline:false,align:'left'},
+        date:{x:510,y:770,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
         teacher:{x:304,y:875,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
         principal:{x:450,y:875,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:385,y:795,w:250,h:120}}
       },
       p3:{
-        date:{x:500,y:753,w:70,h:18,size:10.5,bold:false,italic:false,underline:false,align:'left'},
+        date:{x:500,y:753,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
         teacher:{x:347,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
         principal:{x:470,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:405,y:785,w:250,h:120}}
       }
@@ -62,14 +62,14 @@ const SIGNATURE_DEFAULTS={
   },
   sunny:{
     p2:{
-      date:{x:506,y:755,w:80,h:18,size:10.5,bold:false,italic:false,underline:false,align:'left'},
+      date:{x:506,y:755,w:80,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
       teacher:{x:300,y:870,w:100,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
       principal:{x:455,y:870,w:105,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:395,y:795,w:250,h:120}}
     }
   },
   infant:{
     p2:{
-      date:{x:501,y:791.3,w:64,h:18,size:10.5,bold:false,italic:false,underline:false,align:'left'},
+      date:{x:501,y:791.3,w:64,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
       teacher:{x:328,y:883,w:100,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
       principal:{x:445,y:883,w:110,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:390,y:805,w:250,h:120}}
     }
@@ -241,7 +241,8 @@ function scheduleSignaturePreview(immediate=false){
   clearTimeout(signaturePreviewTimer);
   const run=()=>{
     state.generated.clear();
-    $('downloadZipBtn').disabled=true;
+    state.reportsReady=false;
+    updateSelectionUI();
     if(state.selected)refreshPreview(state.selected);
   };
   if(immediate)run();else signaturePreviewTimer=setTimeout(run,180);
@@ -531,7 +532,7 @@ function photoFor(student){
 function parseRows(ws){return XLSX.utils.sheet_to_json(ws,{defval:'',raw:true});}
 function getFieldValue(row,header){if(Object.prototype.hasOwnProperty.call(row,header))return row[header];const target=norm(header);const key=Object.keys(row).find(k=>norm(k)===target);return key?row[key]:'';}
 function findWorksheet(cfg){const direct=state.workbook.Sheets[cfg.sheet];if(direct)return direct;const wanted=Object.values(cfg.fields).slice(0,10).map(norm);let best=null,bestScore=-1;for(const name of state.workbook.SheetNames){const ws=state.workbook.Sheets[name];const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});const header=(rows[0]||[]).map(norm);const score=wanted.filter(x=>x&&header.includes(x)).length;if(score>bestScore){bestScore=score;best=ws;}}if(bestScore>=2)return best;return null;}
-function parseWorkbook(){if(!state.workbook)return;if(!window.XLSX){showMsg('Library Excel belum termuat.','error');return;}const cfg=state.type==='sunny'?SUNNY:state.type==='infant'?INFANT:CONFIG[state.level];const ws=findWorksheet(cfg);if(!ws){showMsg(`Sheet data untuk ${state.type==='sunny'?'Sunny':state.type==='infant'?'Infant':state.level} tidak ditemukan.`,'error');return;}const rows=parseRows(ws);state.students=rows.filter(r=>clean(getFieldValue(r,cfg.fields.name))).map((r,index)=>{const obj={raw:r,index,id:`${state.type}-${state.level}-${index}`};for(const [k,h] of Object.entries(cfg.fields))obj[k]=getFieldValue(r,h);obj.name=clean(obj.name);obj.displayName=clean(obj.displayName);obj.note=clean(obj.note);obj.teacher=clean(obj.teacher);return obj;});state.selected=state.students[0]||null;state.generated.clear();state.manualPhotos.clear();state.checked.clear();$('downloadZipBtn').disabled=true;updateTeacherFilter();updateUI();}
+function parseWorkbook(){if(!state.workbook)return;if(!window.XLSX){showMsg('Library Excel belum termuat.','error');return;}const cfg=state.type==='sunny'?SUNNY:state.type==='infant'?INFANT:CONFIG[state.level];const ws=findWorksheet(cfg);if(!ws){showMsg(`Sheet data untuk ${state.type==='sunny'?'Sunny':state.type==='infant'?'Infant':state.level} tidak ditemukan.`,'error');return;}const rows=parseRows(ws);state.students=rows.filter(r=>clean(getFieldValue(r,cfg.fields.name))).map((r,index)=>{const obj={raw:r,index,id:`${state.type}-${state.level}-${index}`};for(const [k,h] of Object.entries(cfg.fields))obj[k]=getFieldValue(r,h);obj.name=clean(obj.name);obj.displayName=clean(obj.displayName);obj.note=clean(obj.note);obj.teacher=clean(obj.teacher);return obj;});state.selected=state.students[0]||null;state.generated.clear();state.reportsReady=false;state.manualPhotos.clear();state.checked.clear();updateTeacherFilter();updateUI();}
 function expectedTemplateLabel(){if(state.type==='sunny')return 'Sunny';if(state.type==='infant')return 'Infant';return `Glow ${state.level[0].toUpperCase()+state.level.slice(1)}`;}
 function detectWorkbookTemplate(wb){
   const names=wb?.SheetNames||[];
@@ -597,7 +598,7 @@ async function loadExcel(file){
     $('excelInfo').classList.add('ok');
   }catch(err){console.error(err);showMsg('Excel gagal dibaca. Pastikan file .xlsx/.xls yang valid.','error');$('excelInfo').textContent='Excel gagal dibaca.';$('excelInfo').classList.remove('ok');}
 }
-function loadPhotos(files){markDirty();state.photos.clear();for(const f of files){if(!f.type.startsWith('image/'))continue;const key=norm(f.name);if(key)state.photos.set(key,{file:f,url:URL.createObjectURL(f)});}$('photoInfo').textContent=files.length?`✓ ${files.length} foto siap dicocokkan`:'Belum ada foto.';$('photoInfo').classList.toggle('ok',!!files.length);if(state.students.length)updateUI();}
+function loadPhotos(files){markDirty();state.photos.clear();state.generated.clear();state.reportsReady=false;for(const f of files){if(!f.type.startsWith('image/'))continue;const key=norm(f.name);if(key)state.photos.set(key,{file:f,url:URL.createObjectURL(f)});}$('photoInfo').textContent=files.length?`✓ ${files.length} foto siap dicocokkan`:'Belum ada foto.';$('photoInfo').classList.toggle('ok',!!files.length);if(state.students.length)updateUI();}
 function getTeacherName(student){return clean(student?.teacher)||'Tanpa nama guru';}
 function getFilteredStudents(){
   const value=clean($('teacherFilter')?.value||'');
@@ -619,8 +620,12 @@ function updateSelectionUI(){
   const count=visible.filter(s=>state.checked.has(s.id)).length;
   const el=$('selectionCount');
   if(el)el.textContent=`${count} dipilih`;
+
+  // Download hanya aktif setelah proses semua rapor selesai.
   const zip=$('downloadZipBtn');
-  if(zip)zip.disabled=!state.students.length;
+  const one=$('downloadOneBtn');
+  if(zip)zip.disabled=!state.reportsReady || !state.generated.size;
+  if(one)one.disabled=!state.reportsReady || !state.selected || !state.generated.has(state.selected.id);
 }
 function updateSettingsOverview(){
   const b=getBiodataConfig();
@@ -670,7 +675,7 @@ function setPreview(blob,student){
   frame.innerHTML=`<object data="${previewUrl}#page=1&zoom=page-width" type="application/pdf" aria-label="Preview rapor"><div class="preview-fallback">Preview PDF tidak tampil di browser ini. <a href="${previewUrl}" target="_blank" rel="noopener">Buka PDF</a></div></object>`;
   $('previewMeta').textContent=photoFor(student)?'Foto ditemukan.':'Foto belum ditemukan — klik 📷 untuk menambahkan.';
 }
-async function refreshPreview(student){$('previewTitle').textContent=student.name;$('previewMeta').textContent='Membuat preview…';$('manualPhotoBtn').disabled=false;$('downloadOneBtn').disabled=true;try{const blob=await generatePdf(student);await setPreview(blob,student);state.generated.set(student.id,blob);$('downloadOneBtn').disabled=false;}catch(err){console.error(err);$('previewMeta').textContent='PDF belum bisa dibuat';showMsg(err.message||'Gagal membuat PDF.','error');}}
+async function refreshPreview(student){$('previewTitle').textContent=student.name;$('previewMeta').textContent='Membuat preview…';$('manualPhotoBtn').disabled=false;$('downloadOneBtn').disabled=true;try{const blob=await generatePdf(student);await setPreview(blob,student);state.generated.set(student.id,blob);updateSelectionUI();}catch(err){console.error(err);$('previewMeta').textContent='PDF belum bisa dibuat';showMsg(err.message||'Gagal membuat PDF.','error');}}
 function selectStudent(student,rerender=true){state.selected=student;if(rerender)renderStudents();refreshPreview(student);}
 
 function drawIdentity(page,student){const vals={name:student.name,gender:student.gender,place:student.place,birth:fmtDate(student.birth),father:student.father,mother:student.mother,job:student.job,address:student.address,phone:student.phone};const cfg=getBiodataConfig();for(const [key,x,y,w,h] of IDENTITY_BOXES)writeTransparent(page,{x:x+cfg.x,y:y+cfg.y,w,h},vals[key],{size:cfg.size});}
@@ -776,8 +781,11 @@ async function generateAll(showSuccess=true){
   if(!state.students.length||busy)return false;
   busy=true;
   state.generated.clear();
+  state.reportsReady=false;
+  updateSelectionUI();
   $('generateBtn').disabled=true;
   $('downloadZipBtn').disabled=true;
+  $('downloadOneBtn').disabled=true;
   $('statStatus').textContent='Membuat…';
   openGenerationModal(state.students.length,'Sedang membuat rapor','Setiap siswa diproses satu per satu.');
   const errors=[];
@@ -793,7 +801,8 @@ async function generateAll(showSuccess=true){
     }
     const ok=state.generated.size;
     $('statStatus').textContent=errors.length?`${ok} berhasil`:'Selesai';
-    $('downloadZipBtn').disabled=!ok;
+    state.reportsReady=ok>0;
+    updateSelectionUI();
     closeGenerationModal();
     if(showSuccess){
       if(errors.length) openExportSuccess(ok,'rapor',`${ok} rapor berhasil dibuat. ${errors.length} siswa perlu diperiksa kembali.`);
@@ -816,6 +825,7 @@ function getDownloadSelection(scope){
 async function downloadZip(scope='selected'){
   try{getLibraries();}catch(err){showMsg(err.message,'error');return;}
   if(!state.students.length){showMsg('Upload Excel terlebih dahulu.','info');return;}
+  if(!state.reportsReady){showMsg('Proses semua rapor terlebih dahulu sebelum mengunduh.','info');return;}
   const selection=getDownloadSelection(scope);
   const selectedStudents=selection.students;
   if(!selectedStudents.length){
@@ -899,9 +909,9 @@ $('signaturePageSelect')?.addEventListener('change',()=>{renderSignatureEditor()
 $('resetBiodataBtn')?.addEventListener('click',()=>{resetBiodataConfig();updateSettingsOverview();});
 $('resetSignatureBtn')?.addEventListener('click',()=>{const kind=signatureUiKind();resetSignatureConfig(kind,signatureUiPageIndex());});
 
-$('reportDate').value=currentDate();$('excelBtn').onclick=()=>$('excelInput').click();$('photoBtn').onclick=()=>$('photoInput').click();$('excelInput').onchange=e=>{if(e.target.files[0])loadExcel(e.target.files[0]);e.target.value='';};$('photoInput').onchange=e=>{loadPhotos([...e.target.files]);e.target.value='';};$('manualPhotoBtn').onclick=()=>{if(state.selected)chooseManualPhoto(state.selected);};$('manualPhotoInput').onchange=e=>{const f=e.target.files[0];if(!f||!state.selected)return;const old=state.manualPhotos.get(state.selected.id);if(old?.url)URL.revokeObjectURL(old.url);state.manualPhotos.set(state.selected.id,{file:f,url:URL.createObjectURL(f)});markDirty();state.generated.delete(state.selected.id);$('photoInfo').textContent=`✓ Foto manual untuk ${state.selected.name}`;$('photoInfo').classList.add('ok');renderStudents();refreshPreview(state.selected);e.target.value='';};$('generateBtn').onclick=()=>generateAll(true);$('downloadZipBtn').onclick=downloadZip;
-$('teacherFilter')?.addEventListener('change',()=>{const filtered=getFilteredStudents();state.selected=filtered[0]||null;if(!state.selected){$('previewTitle').textContent='Preview rapor';$('previewMeta').textContent='Tidak ada siswa pada filter ini.';$('previewFrame').innerHTML='<div class="preview-placeholder">Tidak ada siswa untuk ditampilkan.</div>';$('downloadOneBtn').disabled=true;$('manualPhotoBtn').disabled=true;}updateUI();});$('selectVisibleBtn')?.addEventListener('click',()=>{for(const s of getFilteredStudents())state.checked.add(s.id);renderStudents();updateSelectionUI();});$('clearSelectionBtn')?.addEventListener('click',()=>{for(const s of getFilteredStudents())state.checked.delete(s.id);renderStudents();updateSelectionUI();});$('downloadOneBtn').onclick=async()=>{if(!state.selected)return;try{const blob=state.generated.get(state.selected.id)||await generatePdf(state.selected);state.generated.set(state.selected.id,blob);saveBlob(blob,`${safeFile(state.selected.name)}.pdf`);openExportSuccess(1,'dokumen',`Rapor ${state.selected.name} sudah diunduh.`);}catch(e){showMsg(e.message||'Gagal membuat PDF.','error');}};$('downloadZipBtn').onclick=()=>toggleDownloadMenu();document.querySelectorAll('[data-download-scope]').forEach(btn=>btn.addEventListener('click',()=>{if(btn.disabled)return;const scope=btn.dataset.downloadScope;closeDownloadMenu();downloadZip(scope);}));$('resetBtn').onclick=()=>{if(hasUnsavedWork)showLeaveModal();else location.reload();};
-['city','reportDate','period','className','teacher','principal'].forEach(id=>$(id).addEventListener('input',()=>{markDirty();state.generated.clear();$('downloadZipBtn').disabled=true;if(state.selected)refreshPreview(state.selected);}));
+$('reportDate').value=currentDate();$('excelBtn').onclick=()=>$('excelInput').click();$('photoBtn').onclick=()=>$('photoInput').click();$('excelInput').onchange=e=>{if(e.target.files[0])loadExcel(e.target.files[0]);e.target.value='';};$('photoInput').onchange=e=>{loadPhotos([...e.target.files]);e.target.value='';};$('manualPhotoBtn').onclick=()=>{if(state.selected)chooseManualPhoto(state.selected);};$('manualPhotoInput').onchange=e=>{const f=e.target.files[0];if(!f||!state.selected)return;const old=state.manualPhotos.get(state.selected.id);if(old?.url)URL.revokeObjectURL(old.url);state.manualPhotos.set(state.selected.id,{file:f,url:URL.createObjectURL(f)});markDirty();state.generated.clear();state.reportsReady=false;updateSelectionUI();$('photoInfo').textContent=`✓ Foto manual untuk ${state.selected.name}`;$('photoInfo').classList.add('ok');renderStudents();refreshPreview(state.selected);e.target.value='';};$('generateBtn').onclick=()=>generateAll(true);$('downloadZipBtn').onclick=downloadZip;
+$('teacherFilter')?.addEventListener('change',()=>{const filtered=getFilteredStudents();state.selected=filtered[0]||null;if(!state.selected){$('previewTitle').textContent='Preview rapor';$('previewMeta').textContent='Tidak ada siswa pada filter ini.';$('previewFrame').innerHTML='<div class="preview-placeholder">Tidak ada siswa untuk ditampilkan.</div>';$('downloadOneBtn').disabled=true;$('manualPhotoBtn').disabled=true;}updateUI();});$('selectVisibleBtn')?.addEventListener('click',()=>{for(const s of getFilteredStudents())state.checked.add(s.id);renderStudents();updateSelectionUI();});$('clearSelectionBtn')?.addEventListener('click',()=>{for(const s of getFilteredStudents())state.checked.delete(s.id);renderStudents();updateSelectionUI();});$('downloadOneBtn').onclick=async()=>{if(!state.selected)return;if(!state.reportsReady){showMsg('Proses semua rapor terlebih dahulu sebelum mengunduh.','info');return;}try{const blob=state.generated.get(state.selected.id)||await generatePdf(state.selected);state.generated.set(state.selected.id,blob);saveBlob(blob,`${safeFile(state.selected.name)}.pdf`);openExportSuccess(1,'dokumen',`Rapor ${state.selected.name} sudah diunduh.`);}catch(e){showMsg(e.message||'Gagal membuat PDF.','error');}};$('downloadZipBtn').onclick=()=>toggleDownloadMenu();document.querySelectorAll('[data-download-scope]').forEach(btn=>btn.addEventListener('click',()=>{if(btn.disabled)return;const scope=btn.dataset.downloadScope;closeDownloadMenu();downloadZip(scope);}));$('resetBtn').onclick=()=>{if(hasUnsavedWork)showLeaveModal();else location.reload();};
+['city','reportDate','period','className','teacher','principal'].forEach(id=>$(id).addEventListener('input',()=>{markDirty();state.generated.clear();state.reportsReady=false;updateSelectionUI();if(state.selected)refreshPreview(state.selected);}));
 // Proteksi keluar halaman.
 // Browser tetap dapat menampilkan dialog native untuk refresh/tutup tab dari UI browser.
 // Semua aksi yang bisa kita intercept dari halaman memakai modal custom di bawah.
