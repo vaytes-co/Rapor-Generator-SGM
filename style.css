@@ -1026,7 +1026,7 @@ img {
     transform:translateY(0) rotate(0deg)
   }
   50% {
-    transform:translateY(-4px) rotate(-1deg)
+    transform:translateY(4px) rotate(1deg)
   }
 }
 @keyframes emptyOrbitPulse {
@@ -1041,7 +1041,7 @@ img {
 }
 @keyframes emptyBeeOrbit {
   to {
-    transform:rotate(360deg)
+    transform:rotate(-360deg)
   }
 }
 @keyframes emptyBeeFloat {
