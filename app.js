@@ -598,7 +598,79 @@ async function loadExcel(file){
     $('excelInfo').classList.add('ok');
   }catch(err){console.error(err);showMsg('Excel gagal dibaca. Pastikan file .xlsx/.xls yang valid.','error');$('excelInfo').textContent='Excel gagal dibaca.';$('excelInfo').classList.remove('ok');}
 }
-function loadPhotos(files){markDirty();state.photos.clear();state.generated.clear();state.reportsReady=false;for(const f of files){if(!f.type.startsWith('image/'))continue;const key=norm(f.name);if(key)state.photos.set(key,{file:f,url:URL.createObjectURL(f)});}$('photoInfo').textContent=files.length?`✓ ${files.length} foto siap dicocokkan`:'Belum ada foto.';$('photoInfo').classList.toggle('ok',!!files.length);if(state.students.length)updateUI();}
+
+
+async function loadPhotos(files) {
+  markDirty();
+
+  // Bersihkan URL thumbnail sebelumnya.
+  for (const photo of state.photos.values()) {
+    if (photo.url) URL.revokeObjectURL(photo.url);
+  }
+
+  state.photos.clear();
+  state.generated.clear();
+  state.reportsReady = false;
+
+  const accepted = [];
+  const rejected = [];
+
+  const info = $("photoInfo");
+  if (info) info.textContent = "Memproses foto...";
+
+  for (const file of Array.from(files || [])) {
+    if (!isPotentialImageFile(file)) {
+      rejected.push(file.name);
+      continue;
+    }
+
+    const key = norm(file.name);
+    if (!key) continue;
+
+    try {
+      let thumbnailBlob = file;
+
+      // Konversi HEIC/HEIF menjadi PNG untuk thumbnail.
+      if (isHeicFile(file)) {
+        const pngBytes = await imageFileToPng(file);
+
+        thumbnailBlob = new Blob([pngBytes], {
+          type: "image/png"
+        });
+      }
+
+      const thumbnailUrl = URL.createObjectURL(thumbnailBlob);
+
+      // file tetap asli untuk proses PDF;
+      // url menggunakan gambar yang dapat ditampilkan browser.
+      state.photos.set(key, {
+        file: file,
+        url: thumbnailUrl
+      });
+
+      accepted.push(file.name);
+    } catch (error) {
+      console.error("Gagal memproses thumbnail:", file.name, error);
+      rejected.push(file.name);
+    }
+  }
+
+  if (info) {
+    info.textContent =
+      `${accepted.length} foto berhasil diproses` +
+      (rejected.length ? ` · ${rejected.length} gagal` : "");
+
+    info.classList.toggle("ok", accepted.length > 0);
+  }
+
+  if (rejected.length) {
+    console.warn("Foto gagal diproses:", rejected);
+  }
+
+  if (state.students.length) updateUI();
+}
+
+
 function getTeacherName(student){return clean(student?.teacher)||'Tanpa nama guru';}
 function getFilteredStudents(){
   const value=clean($('teacherFilter')?.value||'');
@@ -654,6 +726,9 @@ function renderStudents(){
   const list=$('studentList');list.innerHTML='';
   for(const s of getFilteredStudents()){
     const p=photoFor(s);
+    if (p?.url) {
+      console.log("Thumbnail siswa:", s.name, p.url);
+    }
     const row=document.createElement('div');row.className='student-row'+(state.checked.has(s.id)?' checked':'');
     const check=document.createElement('label');check.className='student-check';check.title='Tandai / pilih siswa';
     const input=document.createElement('input');input.type='checkbox';input.checked=state.checked.has(s.id);
