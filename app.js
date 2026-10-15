@@ -681,7 +681,72 @@ function selectStudent(student,rerender=true){state.selected=student;if(rerender
 function drawIdentity(page,student){const vals={name:student.name,gender:student.gender,place:student.place,birth:fmtDate(student.birth),father:student.father,mother:student.mother,job:student.job,address:student.address,phone:student.phone};const cfg=getBiodataConfig();for(const [key,x,y,w,h] of IDENTITY_BOXES)writeTransparent(page,{x:x+cfg.x,y:y+cfg.y,w,h},vals[key],{size:cfg.size});}
 function drawHeader(page,student,set){const name=clean(student.displayName)||student.name;const infant=state.type==='infant';const bars=[{x:312.3,y:235,w:infant?255:269.5,h:infant?23.3:20.6,label:'NAMA',value:name},{x:312.3,y:262.3,w:infant?255:269.5,h:infant?22.2:20.6,label:'PERIODE / TA',value:set.period},{x:312.3,y:289.6,w:infant?255:269.5,h:infant?21.5:20.6,label:'KELAS',value:set.className},{x:397.4,y:205.5,w:infant?169.8:185.6,h:infant?19.2:18.7,label:'CABANG',value:set.city}];for(const b of bars){fillRect(page,b);drawText(page,b.label,b.x+3,b.y+3,110,12,COLORS.white,'left',true);drawText(page,':',b.x+(b.label==='CABANG'?58:112),b.y+3,12,12,COLORS.white,'left',true);const vx=b.x+(b.label==='CABANG'?66:118);drawText(page,b.value,vx,b.y+3,b.w-(vx-b.x)-5,12,COLORS.white,'left',true);}}
 async function drawPhoto(page,photo,doc){if(!photo)return;const bytes=new Uint8Array(await photo.file.arrayBuffer());let img;try{img=await doc.embedJpg(bytes);}catch{try{img=await doc.embedPng(bytes);}catch{const png=await imageFileToPng(photo.file);img=await doc.embedPng(png);}}const box={x:146.6,y:218.9,w:61.1,h:84};const scale=Math.min(box.w/img.width,box.h/img.height);const w=img.width*scale,h=img.height*scale;page.drawImage(img,{x:box.x+(box.w-w)/2,y:page.getHeight()-box.y-box.h+(box.h-h)/2,width:w,height:h});}
-async function imageFileToPng(file){const bitmap=await createImageBitmap(file);const canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;canvas.getContext('2d').drawImage(bitmap,0,0);bitmap.close();const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw new Error('Foto tidak dapat diproses. Gunakan JPG atau PNG.');return new Uint8Array(await blob.arrayBuffer());}
+
+async function imageFileToPng(file) {
+  let source = null;
+  let objectUrl = null;
+
+  try {
+    // Metode pertama: membaca gambar secara langsung.
+    try {
+      source = await createImageBitmap(file);
+    } catch {
+      // Metode alternatif untuk format yang didukung browser.
+      objectUrl = URL.createObjectURL(file);
+
+      source = await new Promise((resolve, reject) => {
+        const image = new Image();
+
+        image.onload = () => resolve(image);
+        image.onerror = () => {
+          reject(
+            new Error(
+              `Format foto "${file.name}" tidak dapat dibaca browser.`
+            )
+          );
+        };
+
+        image.src = objectUrl;
+      });
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = source.width || source.naturalWidth;
+    canvas.height = source.height || source.naturalHeight;
+
+    const context = canvas.getContext("2d");
+
+    if (!context || !canvas.width || !canvas.height) {
+      throw new Error("Ukuran foto tidak valid.");
+    }
+
+    // Konversi gambar ke PNG agar kompatibel dengan PDF.
+    context.drawImage(source, 0, 0);
+
+    const blob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, "image/png");
+    });
+
+    if (!blob) {
+      throw new Error("Gagal mengonversi foto ke PNG.");
+    }
+
+    return new Uint8Array(await blob.arrayBuffer());
+  } catch (error) {
+    console.error("Konversi foto gagal:", file.name, error);
+    throw new Error(
+      `Foto "${file.name}" gagal diproses. Coba gunakan JPG, PNG, atau WebP.`
+    );
+  } finally {
+    if (source && typeof source.close === "function") {
+      source.close();
+    }
+
+    if (objectUrl) {
+      URL.revokeObjectURL(objectUrl);
+    }
+  }
+}
 function noteBox(kind,pageIndex){
   if(kind==='infant'){
     return {x:45.8,y:746.3,w:521.4,h:69.2};
