@@ -25,53 +25,53 @@ const SIGNATURE_DEFAULTS={
   glow:{
     lower:{
       p2:{
-        date:{x:515,y:774.3,w:70,h:18,size:10,bold:true,italic:false,underline:false,align:'left'},
-        teacher:{x:290,y:885,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
-        principal:{x:459,y:885,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:390,y:810,w:250,h:120}}
+        date:{x:450,y:774.3,w:70,h:18,size:10,bold:true,italic:false,underline:false,align:'left'},
+        teacher:{x:290,y:875,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
+        principal:{x:459,y:875,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:390,y:810,w:250,h:120}}
       },
       p3:{
-        date:{x:513,y:735,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
-        teacher:{x:315,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
-        principal:{x:460,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:390,y:782,w:250,h:120}}
+        date:{x:450,y:735,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
+        teacher:{x:315,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
+        principal:{x:460,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:390,y:782,w:250,h:120}}
       }
     },
     middle:{
       p2:{
-        date:{x:505,y:775.5,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
-        teacher:{x:315,y:880,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
-        principal:{x:460,y:880,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:390,y:800,w:250,h:120}}
+        date:{x:430,y:775.5,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
+        teacher:{x:315,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
+        principal:{x:460,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:390,y:800,w:250,h:120}}
       },
       p3:{
-        date:{x:513,y:735,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
-        teacher:{x:349,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
-        principal:{x:475,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:415,y:785,w:250,h:120}}
+        date:{x:440,y:735,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
+        teacher:{x:349,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
+        principal:{x:475,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:415,y:785,w:250,h:120}}
       }
     },
     upper:{
       p2:{
-        date:{x:510,y:770,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
-        teacher:{x:304,y:875,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
-        principal:{x:450,y:875,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:385,y:795,w:250,h:120}}
+        date:{x:430,y:770,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
+        teacher:{x:304,y:865,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
+        principal:{x:450,y:865,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:385,y:795,w:250,h:120}}
       },
       p3:{
-        date:{x:500,y:753,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
-        teacher:{x:347,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
-        principal:{x:470,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:405,y:785,w:250,h:120}}
+        date:{x:435,y:753,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
+        teacher:{x:347,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
+        principal:{x:470,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:405,y:785,w:250,h:120}}
       }
     }
   },
   sunny:{
     p2:{
-      date:{x:506,y:755,w:80,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
-      teacher:{x:300,y:870,w:100,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
-      principal:{x:455,y:870,w:105,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:395,y:795,w:250,h:120}}
+      date:{x:440,y:755,w:80,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
+      teacher:{x:300,y:870,w:100,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
+      principal:{x:455,y:870,w:105,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:395,y:795,w:250,h:120}}
     }
   },
   infant:{
     p2:{
-      date:{x:501,y:791.3,w:64,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
-      teacher:{x:328,y:883,w:100,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center'},
-      principal:{x:445,y:883,w:110,h:18,size:10.5,bold:true,italic:false,underline:false,align:'center',digitalEnabled:false,digital:{x:390,y:805,w:250,h:120}}
+      date:{x:430,y:791.3,w:64,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
+      teacher:{x:328,y:883,w:100,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
+      principal:{x:445,y:883,w:110,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:390,y:805,w:250,h:120}}
     }
   }
 };
@@ -87,7 +87,7 @@ const BIODATA_DEFAULTS={
 const BIODATA_STORAGE_KEY='rapor-generator-biodata-settings-v3';
 let biodataStore={};
 
-const SIGNATURE_STORAGE_KEY='rapor-generator-signature-settings-v4';
+const SIGNATURE_STORAGE_KEY='rapor-generator-signature-settings-v5';
 let signatureStore={};
 let signaturePreviewTimer=null;
 let hasUnsavedWork=false;
@@ -443,7 +443,7 @@ function fmtDate(v){if(!v)return '';if(v instanceof Date&&!Number.isNaN(v.getTim
 function currentDate(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function showMsg(text,type='info'){const el=$('message');el.textContent=text;el.className='notice show '+type;}function clearMsg(){$('message').className='notice';$('message').textContent='';}
 function safeFile(s){return clean(s).replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,100)||'Siswa';}function escapeHtml(s){return clean(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function settings(){return{city:clean($('city').value)||'Purwokerto',date:$('reportDate').value,period:clean($('period').value),className:clean($('className').value)||({sunny:'SUNNY CLASS',infant:'INFANT CLASS'}[state.type]||'GLOW CLASS'),teacher:clean($('teacher').value),principal:clean($('principal').value)||'Michelle Juwono'};}
+function settings(){return{city:clean($('city').value),signatureCity:clean($('signatureCity').value),date:$('reportDate').value,period:clean($('period').value),className:clean($('className').value)||({sunny:'SUNNY CLASS',infant:'INFANT CLASS'}[state.type]||'GLOW CLASS'),teacher:clean($('teacher').value),principal:clean($('principal').value)||'Michelle Juwono'};}
 async function getTemplate(key){if(templateCache.has(key))return templateCache.get(key);const res=await fetch(TEMPLATES[key]);if(!res.ok)throw new Error(`Template ${key} tidak ditemukan.`);const bytes=await res.arrayBuffer();templateCache.set(key,bytes);return bytes;}
 async function setupFonts(doc){
   // Font rapor: ABeeZee dari folder assets/fonts.
@@ -1021,7 +1021,7 @@ async function drawDigitalSignature(page,img,box){
   page.drawImage(img,{x:box.x+(box.w-w)/2,y:page.getHeight()-box.y-box.h+(box.h-h)/2,width:w,height:h});
 }
 
-async function generatePdf(student){getLibraries();const cfg=state.type==='sunny'?SUNNY:state.type==='infant'?INFANT:CONFIG[state.level];const bytes=await getTemplate(cfg.key);const doc=await PDFDocument.load(bytes);await setupFonts(doc);const set=settings();const pages=doc.getPages();const kind=state.type==='sunny'?'sunny':state.type==='infant'?'infant':state.level;drawIdentity(pages[0],student);const photo=photoFor(student);for(let i=1;i<pages.length;i++){drawHeader(pages[i],student,set);if(i===1)await drawPhoto(pages[i],photo,doc);for(const [header,pageNo,box] of cfg.results){if(pageNo===i+1){const val=clean(getFieldValue(student.raw,header));writeTransparent(pages[i],box,val,{size:12,center:true});}}const sig=signaturePositions(kind,i+1);const dateText=set.date?fmtDate(set.date):'';if(dateText)drawStyledText(pages[i],dateText,sig.date.x,sig.date.y,sig.date.w,sig.date.size,COLORS.orange,sig.date.align,{...sig.date,fit:false});const teacher=clean(set.teacher)||student.teacher;if(teacher)drawStyledText(pages[i],teacher,sig.teacher.x,sig.teacher.y,sig.teacher.w,sig.teacher.size,COLORS.orange,sig.teacher.align,sig.teacher);
+async function generatePdf(student){getLibraries();const cfg=state.type==='sunny'?SUNNY:state.type==='infant'?INFANT:CONFIG[state.level];const bytes=await getTemplate(cfg.key);const doc=await PDFDocument.load(bytes);await setupFonts(doc);const set=settings();const pages=doc.getPages();const kind=state.type==='sunny'?'sunny':state.type==='infant'?'infant':state.level;drawIdentity(pages[0],student);const photo=photoFor(student);for(let i=1;i<pages.length;i++){drawHeader(pages[i],student,set);if(i===1)await drawPhoto(pages[i],photo,doc);for(const [header,pageNo,box] of cfg.results){if(pageNo===i+1){const val=clean(getFieldValue(student.raw,header));writeTransparent(pages[i],box,val,{size:12,center:true});}}const sig=signaturePositions(kind,i+1);const formattedDate=set.date?fmtDate(set.date):'';const dateText=[set.signatureCity,formattedDate].filter(Boolean).join(', ');if(dateText)drawStyledText(pages[i],dateText,sig.date.x,sig.date.y,Math.max(sig.date.w,190),sig.date.size,COLORS.orange,sig.date.align,{...sig.date,fit:false,underline:false});const teacher=clean(set.teacher)||student.teacher;if(teacher)drawStyledText(pages[i],teacher,sig.teacher.x,sig.teacher.y,sig.teacher.w,sig.teacher.size,COLORS.orange,sig.teacher.align,sig.teacher);
     if(set.principal){
       if(sig.principal.digitalEnabled&&state.principalSignature?.file){
         const sigImg=await embedSignatureImage(doc,state.principalSignature.file);
@@ -1272,7 +1272,7 @@ $('manualPhotoInput').onchange=async e=>{
   }
 };$('generateBtn').onclick=()=>generateAll(true);$('downloadZipBtn').onclick=downloadZip;
 $('teacherFilter')?.addEventListener('change',()=>{const filtered=getFilteredStudents();state.selected=filtered[0]||null;if(!state.selected){$('previewTitle').textContent='Preview rapor';$('previewMeta').textContent='Tidak ada siswa pada filter ini.';$('previewFrame').innerHTML='<div class="preview-placeholder">Tidak ada siswa untuk ditampilkan.</div>';$('downloadOneBtn').disabled=true;$('manualPhotoBtn').disabled=true;}updateUI();});$('selectVisibleBtn')?.addEventListener('click',()=>{for(const s of getFilteredStudents())state.checked.add(s.id);renderStudents();updateSelectionUI();});$('clearSelectionBtn')?.addEventListener('click',()=>{for(const s of getFilteredStudents())state.checked.delete(s.id);renderStudents();updateSelectionUI();});$('downloadOneBtn').onclick=async()=>{if(!state.selected)return;if(!state.reportsReady){showMsg('Proses semua rapor terlebih dahulu sebelum mengunduh.','info');return;}try{const blob=state.generated.get(state.selected.id)||await generatePdf(state.selected);state.generated.set(state.selected.id,blob);saveBlob(blob,`${safeFile(state.selected.name)}.pdf`);openExportSuccess(1,'dokumen',`Rapor ${state.selected.name} sudah diunduh.`);}catch(e){showMsg(e.message||'Gagal membuat PDF.','error');}};$('downloadZipBtn').onclick=()=>toggleDownloadMenu();document.querySelectorAll('[data-download-scope]').forEach(btn=>btn.addEventListener('click',()=>{if(btn.disabled)return;const scope=btn.dataset.downloadScope;closeDownloadMenu();downloadZip(scope);}));$('resetBtn').onclick=()=>{if(hasUnsavedWork)showLeaveModal();else location.reload();};
-['city','reportDate','period','className','teacher','principal'].forEach(id=>$(id).addEventListener('input',()=>{markDirty();state.generated.clear();state.reportsReady=false;updateSelectionUI();if(state.selected)refreshPreview(state.selected);}));
+['city','signatureCity','reportDate','period','className','teacher','principal'].forEach(id=>$(id).addEventListener('input',()=>{markDirty();state.generated.clear();state.reportsReady=false;updateSelectionUI();if(state.selected)refreshPreview(state.selected);}));
 ['photoWidthCm','photoHeightCm','photoXcm','photoYcm'].forEach(id=>$(id)?.addEventListener('input',()=>{markDirty();state.generated.clear();state.reportsReady=false;updateSelectionUI();if(state.selected)refreshPreview(state.selected);}));
 $('resetPhotoSizeBtn')?.addEventListener('click',()=>{ $('photoWidthCm').value='3'; $('photoHeightCm').value='4'; $('photoXcm').value='4.4'; $('photoYcm').value='7.2'; markDirty(); state.generated.clear(); state.reportsReady=false; updateSelectionUI(); if(state.selected)refreshPreview(state.selected); });
 // Proteksi keluar halaman.
