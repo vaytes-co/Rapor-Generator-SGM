@@ -682,26 +682,121 @@ function drawIdentity(page,student){const vals={name:student.name,gender:student
 function drawHeader(page,student,set){const name=clean(student.displayName)||student.name;const infant=state.type==='infant';const bars=[{x:312.3,y:235,w:infant?255:269.5,h:infant?23.3:20.6,label:'NAMA',value:name},{x:312.3,y:262.3,w:infant?255:269.5,h:infant?22.2:20.6,label:'PERIODE / TA',value:set.period},{x:312.3,y:289.6,w:infant?255:269.5,h:infant?21.5:20.6,label:'KELAS',value:set.className},{x:397.4,y:205.5,w:infant?169.8:185.6,h:infant?19.2:18.7,label:'CABANG',value:set.city}];for(const b of bars){fillRect(page,b);drawText(page,b.label,b.x+3,b.y+3,110,12,COLORS.white,'left',true);drawText(page,':',b.x+(b.label==='CABANG'?58:112),b.y+3,12,12,COLORS.white,'left',true);const vx=b.x+(b.label==='CABANG'?66:118);drawText(page,b.value,vx,b.y+3,b.w-(vx-b.x)-5,12,COLORS.white,'left',true);}}
 async function drawPhoto(page,photo,doc){if(!photo)return;const bytes=new Uint8Array(await photo.file.arrayBuffer());let img;try{img=await doc.embedJpg(bytes);}catch{try{img=await doc.embedPng(bytes);}catch{const png=await imageFileToPng(photo.file);img=await doc.embedPng(png);}}const box={x:146.6,y:218.9,w:61.1,h:84};const scale=Math.min(box.w/img.width,box.h/img.height);const w=img.width*scale,h=img.height*scale;page.drawImage(img,{x:box.x+(box.w-w)/2,y:page.getHeight()-box.y-box.h+(box.h-h)/2,width:w,height:h});}
 
+
+let heic2anyLoaderPromise = null;
+
+// Mendeteksi file HEIC atau HEIF.
+function isHeicFile(file) {
+  const name = String(file?.name || "").toLowerCase();
+  const type = String(file?.type || "").toLowerCase();
+
+  return (
+    /\.(heic|heif)$/i.test(name) ||
+    type === "image/heic" ||
+    type === "image/heif" ||
+    type === "image/heic-sequence" ||
+    type === "image/heif-sequence"
+  );
+}
+
+// Memuat library decoder HEIC/HEIF dari CDN.
+async function loadHeic2Any() {
+  if (typeof window.heic2any === "function") {
+    return window.heic2any;
+  }
+
+  if (!heic2anyLoaderPromise) {
+    heic2anyLoaderPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+
+      script.src =
+        "https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js";
+
+      script.async = true;
+
+      script.onload = () => {
+        if (typeof window.heic2any === "function") {
+          resolve(window.heic2any);
+        } else {
+          reject(
+            new Error("Library HEIC/HEIF tidak berhasil dimuat.")
+          );
+        }
+      };
+
+      script.onerror = () => {
+        reject(
+          new Error(
+            "Gagal memuat decoder HEIC/HEIF. Periksa koneksi internet."
+          )
+        );
+      };
+
+      document.head.appendChild(script);
+    }).catch((error) => {
+      // Memungkinkan percobaan ulang jika pemuatan gagal.
+      heic2anyLoaderPromise = null;
+      throw error;
+    });
+  }
+
+  return heic2anyLoaderPromise;
+}
+
+// Mengonversi HEIC/HEIF dan gambar lain menjadi PNG.
 async function imageFileToPng(file) {
   let source = null;
   let objectUrl = null;
 
   try {
-    // Metode pertama: membaca gambar secara langsung.
-    try {
-      source = await createImageBitmap(file);
-    } catch {
-      // Metode alternatif untuk format yang didukung browser.
+    // HEIC/HEIF menggunakan decoder khusus.
+    if (isHeicFile(file)) {
+      const convert = await loadHeic2Any();
+
+      const result = await convert({
+        blob: file,
+        toType: "image/png",
+        quality: 0.95
+      });
+
+      const pngBlob = Array.isArray(result)
+        ? result[0]
+        : result;
+
+      if (!(pngBlob instanceof Blob)) {
+        throw new Error(
+          "Decoder tidak menghasilkan gambar PNG yang valid."
+        );
+      }
+
+      return new Uint8Array(await pngBlob.arrayBuffer());
+    }
+
+    // Mencoba membaca gambar secara langsung.
+    if (typeof createImageBitmap === "function") {
+      try {
+        source = await createImageBitmap(file);
+      } catch (error) {
+        console.warn(
+          "createImageBitmap gagal. Mencoba metode alternatif.",
+          error
+        );
+      }
+    }
+
+    // Alternatif untuk format yang didukung browser.
+    if (!source) {
       objectUrl = URL.createObjectURL(file);
 
       source = await new Promise((resolve, reject) => {
         const image = new Image();
 
         image.onload = () => resolve(image);
+
         image.onerror = () => {
           reject(
             new Error(
-              `Format foto "${file.name}" tidak dapat dibaca browser.`
+              `Browser tidak dapat membaca foto "${file.name}".`
             )
           );
         };
@@ -710,32 +805,46 @@ async function imageFileToPng(file) {
       });
     }
 
+    const width = source.width || source.naturalWidth;
+    const height = source.height || source.naturalHeight;
+
+    if (!width || !height) {
+      throw new Error("Ukuran foto tidak valid atau file rusak.");
+    }
+
     const canvas = document.createElement("canvas");
-    canvas.width = source.width || source.naturalWidth;
-    canvas.height = source.height || source.naturalHeight;
+    canvas.width = width;
+    canvas.height = height;
 
     const context = canvas.getContext("2d");
 
-    if (!context || !canvas.width || !canvas.height) {
-      throw new Error("Ukuran foto tidak valid.");
+    if (!context) {
+      throw new Error(
+        "Browser tidak mendukung pemrosesan gambar."
+      );
     }
 
-    // Konversi gambar ke PNG agar kompatibel dengan PDF.
-    context.drawImage(source, 0, 0);
+    context.drawImage(source, 0, 0, width, height);
 
     const blob = await new Promise((resolve) => {
       canvas.toBlob(resolve, "image/png");
     });
 
     if (!blob) {
-      throw new Error("Gagal mengonversi foto ke PNG.");
+      throw new Error("Gagal mengonversi foto menjadi PNG.");
     }
 
     return new Uint8Array(await blob.arrayBuffer());
   } catch (error) {
-    console.error("Konversi foto gagal:", file.name, error);
+    console.error(
+      "Konversi foto gagal:",
+      file?.name,
+      error
+    );
+
     throw new Error(
-      `Foto "${file.name}" gagal diproses. Coba gunakan JPG, PNG, atau WebP.`
+      error?.message ||
+        `Foto "${file?.name || "tanpa nama"}" gagal diproses.`
     );
   } finally {
     if (source && typeof source.close === "function") {
@@ -747,6 +856,7 @@ async function imageFileToPng(file) {
     }
   }
 }
+
 function noteBox(kind,pageIndex){
   if(kind==='infant'){
     return {x:45.8,y:746.3,w:521.4,h:69.2};
