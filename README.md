@@ -21,3 +21,8 @@ The localStorage keys were versioned so the new defaults are applied instead of 
 - Foto JPG/PNG/WebP memakai URL file asli untuk thumbnail agar tidak bergantung pada dukungan konversi canvas yang berbeda antar-browser. HEIC/HEIF dikonversi menjadi PNG untuk thumbnail. Decoder HEIC dimuat saat dibutuhkan dari CDN jsDelivr, sehingga koneksi internet diperlukan untuk konversi HEIC/HEIF.
 - Pencocokan otomatis tetap menggunakan nama file foto dan nama siswa. Pastikan nama file foto sesuai dengan nama siswa.
 
+
+
+### Dukungan foto HEIC/HEIF
+
+HEIC/HEIF dikonversi di browser memakai `heic-to` (libheif terbaru) yang dimuat dari jsDelivr ketika diperlukan. Koneksi internet diperlukan untuk memuat decoder. Hasil PNG yang sama digunakan untuk thumbnail dan PDF. Tidak semua HEIF yang memakai codec/varian tidak umum dijamin didukung oleh decoder.

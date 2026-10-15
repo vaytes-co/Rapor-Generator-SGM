@@ -648,7 +648,7 @@ async function loadPhotos(files) {
       }
 
       const url = URL.createObjectURL(thumbnailBlob);
-      state.photos.set(key, { file, url });
+      state.photos.set(key, { file, blob: thumbnailBlob, url });
       accepted.push(file.name);
     } catch (error) {
       console.error(`Gagal memproses foto "${file.name}":`, error);
@@ -757,7 +757,7 @@ function selectStudent(student,rerender=true){state.selected=student;if(rerender
 
 function drawIdentity(page,student){const vals={name:student.name,gender:student.gender,place:student.place,birth:fmtDate(student.birth),father:student.father,mother:student.mother,job:student.job,address:student.address,phone:student.phone};const cfg=getBiodataConfig();for(const [key,x,y,w,h] of IDENTITY_BOXES)writeTransparent(page,{x:x+cfg.x,y:y+cfg.y,w,h},vals[key],{size:cfg.size});}
 function drawHeader(page,student,set){const name=clean(student.displayName)||student.name;const infant=state.type==='infant';const bars=[{x:312.3,y:235,w:infant?255:269.5,h:infant?23.3:20.6,label:'NAMA',value:name},{x:312.3,y:262.3,w:infant?255:269.5,h:infant?22.2:20.6,label:'PERIODE / TA',value:set.period},{x:312.3,y:289.6,w:infant?255:269.5,h:infant?21.5:20.6,label:'KELAS',value:set.className},{x:397.4,y:205.5,w:infant?169.8:185.6,h:infant?19.2:18.7,label:'CABANG',value:set.city}];for(const b of bars){fillRect(page,b);drawText(page,b.label,b.x+3,b.y+3,110,12,COLORS.white,'left',true);drawText(page,':',b.x+(b.label==='CABANG'?58:112),b.y+3,12,12,COLORS.white,'left',true);const vx=b.x+(b.label==='CABANG'?66:118);drawText(page,b.value,vx,b.y+3,b.w-(vx-b.x)-5,12,COLORS.white,'left',true);}}
-async function drawPhoto(page,photo,doc){if(!photo)return;const bytes=new Uint8Array(await photo.file.arrayBuffer());let img;try{img=await doc.embedJpg(bytes);}catch{try{img=await doc.embedPng(bytes);}catch{const png=await imageFileToPng(photo.file);img=await doc.embedPng(png);}}const box={x:146.6,y:218.9,w:61.1,h:84};const scale=Math.min(box.w/img.width,box.h/img.height);const w=img.width*scale,h=img.height*scale;page.drawImage(img,{x:box.x+(box.w-w)/2,y:page.getHeight()-box.y-box.h+(box.h-h)/2,width:w,height:h});}
+async function drawPhoto(page,photo,doc){if(!photo)return;const sourceBlob=photo.blob||photo.file;const bytes=new Uint8Array(await sourceBlob.arrayBuffer());let img;try{img=await doc.embedJpg(bytes);}catch{try{img=await doc.embedPng(bytes);}catch{const png=await imageFileToPng(sourceBlob);img=await doc.embedPng(png);}}const box={x:146.6,y:218.9,w:61.1,h:84};const scale=Math.min(box.w/img.width,box.h/img.height);const w=img.width*scale,h=img.height*scale;page.drawImage(img,{x:box.x+(box.w-w)/2,y:page.getHeight()-box.y-box.h+(box.h-h)/2,width:w,height:h});}
 
 
 let heic2anyLoaderPromise = null;
@@ -784,47 +784,42 @@ function isHeicFile(file) {
   );
 }
 
-// Memuat library decoder HEIC/HEIF dari CDN.
+// Memuat decoder HEIC/HEIF yang lebih baru. heic-to menggunakan libheif
+// generasi baru untuk menangani file HEIF yang gagal dibaca heic2any.
 async function loadHeic2Any() {
-  if (typeof window.heic2any === "function") {
-    return window.heic2any;
+  if (typeof window.HeicTo === "function") {
+    return async (options) => window.HeicTo({
+      blob: options.blob,
+      type: options.toType || "image/png",
+      quality: options.quality ?? 0.95
+    });
   }
 
   if (!heic2anyLoaderPromise) {
     heic2anyLoaderPromise = new Promise((resolve, reject) => {
       const script = document.createElement("script");
-
-      script.src =
-        "https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js";
-
+      script.src = "https://cdn.jsdelivr.net/npm/heic-to@1.6.6/dist/iife/heic-to.js";
       script.async = true;
-
       script.onload = () => {
-        if (typeof window.heic2any === "function") {
-          resolve(window.heic2any);
+        if (typeof window.HeicTo === "function") {
+          resolve(async (options) => window.HeicTo({
+            blob: options.blob,
+            type: options.toType || "image/png",
+            quality: options.quality ?? 0.95
+          }));
         } else {
-          reject(
-            new Error("Library HEIC/HEIF tidak berhasil dimuat.")
-          );
+          reject(new Error("Decoder HEIF terbaru berhasil dimuat, tetapi tidak tersedia."));
         }
       };
-
-      script.onerror = () => {
-        reject(
-          new Error(
-            "Gagal memuat decoder HEIC/HEIF. Periksa koneksi internet."
-          )
-        );
-      };
-
+      script.onerror = () => reject(new Error(
+        "Gagal memuat decoder HEIF. Periksa koneksi internet dan coba lagi."
+      ));
       document.head.appendChild(script);
     }).catch((error) => {
-      // Memungkinkan percobaan ulang jika pemuatan gagal.
       heic2anyLoaderPromise = null;
       throw error;
     });
   }
-
   return heic2anyLoaderPromise;
 }
 
@@ -849,9 +844,7 @@ async function imageFileToPng(file) {
         : result;
 
       if (!(pngBlob instanceof Blob)) {
-        throw new Error(
-          "Decoder tidak menghasilkan gambar PNG yang valid."
-        );
+        throw new Error("Decoder tidak menghasilkan gambar PNG yang valid.");
       }
 
       return new Uint8Array(await pngBlob.arrayBuffer());
@@ -1221,7 +1214,7 @@ $('manualPhotoInput').onchange=async e=>{
     const thumbnailBlob=new Blob([pngBytes],{type:'image/png'});
     const old=state.manualPhotos.get(state.selected.id);
     if(old?.url)URL.revokeObjectURL(old.url);
-    state.manualPhotos.set(state.selected.id,{file:f,url:URL.createObjectURL(thumbnailBlob)});
+    state.manualPhotos.set(state.selected.id,{file:f,blob:thumbnailBlob,url:URL.createObjectURL(thumbnailBlob)});
     markDirty();
     state.generated.clear();
     state.reportsReady=false;
