@@ -603,73 +603,76 @@ async function loadExcel(file){
 async function loadPhotos(files) {
   markDirty();
 
-  // Bersihkan URL thumbnail sebelumnya.
+  // Bersihkan URL thumbnail dari pemilihan sebelumnya.
   for (const photo of state.photos.values()) {
-    if (photo.url) URL.revokeObjectURL(photo.url);
+    if (photo?.url) URL.revokeObjectURL(photo.url);
   }
-
   state.photos.clear();
   state.generated.clear();
   state.reportsReady = false;
 
+  const selectedFiles = Array.from(files || []);
   const accepted = [];
   const rejected = [];
-
   const info = $("photoInfo");
-  if (info) info.textContent = "Memproses foto...";
 
-  for (const file of Array.from(files || [])) {
+  if (!selectedFiles.length) {
+    if (info) info.textContent = "Tidak ada foto yang dipilih.";
+    return;
+  }
+  if (info) {
+    info.textContent = `Memproses ${selectedFiles.length} file foto...`;
+    info.classList.remove("ok");
+  }
+
+  for (const file of selectedFiles) {
     if (!isPotentialImageFile(file)) {
-      rejected.push(file.name);
+      rejected.push(file.name || "File tanpa nama");
       continue;
     }
 
     const key = norm(file.name);
-    if (!key) continue;
+    if (!key) {
+      rejected.push(file.name || "Nama file kosong");
+      continue;
+    }
 
     try {
-      let thumbnailBlob = file;
+      // Browser sering tidak dapat menampilkan HEIC/HEIF secara langsung.
+      // Simpan file asli untuk PDF, tetapi gunakan PNG hasil konversi untuk thumbnail.
+      // Semua thumbnail dibuat dari PNG yang dinormalisasi.
+      // Ini menghindari ikon rusak pada HEIC/HEIF dan MIME type kosong di Linux.
+      const pngBytes = await imageFileToPng(file);
+      const thumbnailBlob = new Blob([pngBytes], { type: "image/png" });
 
-      // Konversi HEIC/HEIF menjadi PNG untuk thumbnail.
-      if (isHeicFile(file)) {
-        const pngBytes = await imageFileToPng(file);
-
-        thumbnailBlob = new Blob([pngBytes], {
-          type: "image/png"
-        });
-      }
-
-      const thumbnailUrl = URL.createObjectURL(thumbnailBlob);
-
-      // file tetap asli untuk proses PDF;
-      // url menggunakan gambar yang dapat ditampilkan browser.
-      state.photos.set(key, {
-        file: file,
-        url: thumbnailUrl
-      });
-
+      const url = URL.createObjectURL(thumbnailBlob);
+      state.photos.set(key, { file, url });
       accepted.push(file.name);
     } catch (error) {
-      console.error("Gagal memproses thumbnail:", file.name, error);
-      rejected.push(file.name);
+      console.error(`Gagal memproses foto "${file.name}":`, error);
+      rejected.push(file.name || "File tanpa nama");
     }
   }
 
   if (info) {
     info.textContent =
-      `${accepted.length} foto berhasil diproses` +
-      (rejected.length ? ` · ${rejected.length} gagal` : "");
-
+      `${accepted.length} foto siap dicocokkan` +
+      (rejected.length ? ` · ${rejected.length} gagal diproses` : "");
     info.classList.toggle("ok", accepted.length > 0);
   }
 
   if (rejected.length) {
-    console.warn("Foto gagal diproses:", rejected);
+    console.warn("File foto yang gagal diproses:", rejected);
+    if (!accepted.length) {
+      showMsg(
+        "Foto belum berhasil diproses. Periksa koneksi internet untuk decoder HEIC/HEIF dan lihat Console (F12) untuk detail.",
+        "error"
+      );
+    }
   }
 
   if (state.students.length) updateUI();
 }
-
 
 function getTeacherName(student){return clean(student?.teacher)||'Tanpa nama guru';}
 function getFilteredStudents(){
@@ -726,9 +729,6 @@ function renderStudents(){
   const list=$('studentList');list.innerHTML='';
   for(const s of getFilteredStudents()){
     const p=photoFor(s);
-    if (p?.url) {
-      console.log("Thumbnail siswa:", s.name, p.url);
-    }
     const row=document.createElement('div');row.className='student-row'+(state.checked.has(s.id)?' checked':'');
     const check=document.createElement('label');check.className='student-check';check.title='Tandai / pilih siswa';
     const input=document.createElement('input');input.type='checkbox';input.checked=state.checked.has(s.id);
@@ -761,6 +761,14 @@ async function drawPhoto(page,photo,doc){if(!photo)return;const bytes=new Uint8A
 let heic2anyLoaderPromise = null;
 
 // Mendeteksi file HEIC atau HEIF.
+function isPotentialImageFile(file) {
+  if (!file) return false;
+  const name = String(file.name || "").toLowerCase();
+  const type = String(file.type || "").toLowerCase();
+  const knownExtensions = /\.(jpe?g|png|webp|gif|bmp|avif|heic|heif|tiff?|svg)$/i;
+  return type.startsWith("image/") || knownExtensions.test(name);
+}
+
 function isHeicFile(file) {
   const name = String(file?.name || "").toLowerCase();
   const type = String(file?.type || "").toLowerCase();
@@ -1159,7 +1167,36 @@ $('signaturePageSelect')?.addEventListener('change',()=>{renderSignatureEditor()
 $('resetBiodataBtn')?.addEventListener('click',()=>{resetBiodataConfig();updateSettingsOverview();});
 $('resetSignatureBtn')?.addEventListener('click',()=>{const kind=signatureUiKind();resetSignatureConfig(kind,signatureUiPageIndex());});
 
-$('reportDate').value=currentDate();$('excelBtn').onclick=()=>$('excelInput').click();$('photoBtn').onclick=()=>$('photoInput').click();$('excelInput').onchange=e=>{if(e.target.files[0])loadExcel(e.target.files[0]);e.target.value='';};$('photoInput').onchange=e=>{loadPhotos([...e.target.files]);e.target.value='';};$('manualPhotoBtn').onclick=()=>{if(state.selected)chooseManualPhoto(state.selected);};$('manualPhotoInput').onchange=e=>{const f=e.target.files[0];if(!f||!state.selected)return;const old=state.manualPhotos.get(state.selected.id);if(old?.url)URL.revokeObjectURL(old.url);state.manualPhotos.set(state.selected.id,{file:f,url:URL.createObjectURL(f)});markDirty();state.generated.clear();state.reportsReady=false;updateSelectionUI();$('photoInfo').textContent=`✓ Foto manual untuk ${state.selected.name}`;$('photoInfo').classList.add('ok');renderStudents();refreshPreview(state.selected);e.target.value='';};$('generateBtn').onclick=()=>generateAll(true);$('downloadZipBtn').onclick=downloadZip;
+$('reportDate').value=currentDate();$('excelBtn').onclick=()=>$('excelInput').click();$('photoBtn').onclick=()=>$('photoInput').click();
+$('photoFilesBtn').onclick=()=>$('photoFilesInput').click();
+$('excelInput').onchange=e=>{if(e.target.files[0])loadExcel(e.target.files[0]);e.target.value='';};
+$('photoInput').onchange=e=>{if(e.target.files?.length)loadPhotos([...e.target.files]);e.target.value='';};
+$('photoFilesInput').onchange=e=>{if(e.target.files?.length)loadPhotos([...e.target.files]);e.target.value='';};
+$('manualPhotoBtn').onclick=()=>{if(state.selected)chooseManualPhoto(state.selected);};
+$('manualPhotoInput').onchange=async e=>{
+  const f=e.target.files[0];
+  if(!f||!state.selected)return;
+  try {
+    const pngBytes=await imageFileToPng(f);
+    const thumbnailBlob=new Blob([pngBytes],{type:'image/png'});
+    const old=state.manualPhotos.get(state.selected.id);
+    if(old?.url)URL.revokeObjectURL(old.url);
+    state.manualPhotos.set(state.selected.id,{file:f,url:URL.createObjectURL(thumbnailBlob)});
+    markDirty();
+    state.generated.clear();
+    state.reportsReady=false;
+    updateSelectionUI();
+    $('photoInfo').textContent=`✓ Foto manual untuk ${state.selected.name}`;
+    $('photoInfo').classList.add('ok');
+    renderStudents();
+    refreshPreview(state.selected);
+  } catch(error) {
+    console.error('Gagal memproses foto manual:',error);
+    showMsg(error.message||'Foto tidak dapat diproses.','error');
+  } finally {
+    e.target.value='';
+  }
+};$('generateBtn').onclick=()=>generateAll(true);$('downloadZipBtn').onclick=downloadZip;
 $('teacherFilter')?.addEventListener('change',()=>{const filtered=getFilteredStudents();state.selected=filtered[0]||null;if(!state.selected){$('previewTitle').textContent='Preview rapor';$('previewMeta').textContent='Tidak ada siswa pada filter ini.';$('previewFrame').innerHTML='<div class="preview-placeholder">Tidak ada siswa untuk ditampilkan.</div>';$('downloadOneBtn').disabled=true;$('manualPhotoBtn').disabled=true;}updateUI();});$('selectVisibleBtn')?.addEventListener('click',()=>{for(const s of getFilteredStudents())state.checked.add(s.id);renderStudents();updateSelectionUI();});$('clearSelectionBtn')?.addEventListener('click',()=>{for(const s of getFilteredStudents())state.checked.delete(s.id);renderStudents();updateSelectionUI();});$('downloadOneBtn').onclick=async()=>{if(!state.selected)return;if(!state.reportsReady){showMsg('Proses semua rapor terlebih dahulu sebelum mengunduh.','info');return;}try{const blob=state.generated.get(state.selected.id)||await generatePdf(state.selected);state.generated.set(state.selected.id,blob);saveBlob(blob,`${safeFile(state.selected.name)}.pdf`);openExportSuccess(1,'dokumen',`Rapor ${state.selected.name} sudah diunduh.`);}catch(e){showMsg(e.message||'Gagal membuat PDF.','error');}};$('downloadZipBtn').onclick=()=>toggleDownloadMenu();document.querySelectorAll('[data-download-scope]').forEach(btn=>btn.addEventListener('click',()=>{if(btn.disabled)return;const scope=btn.dataset.downloadScope;closeDownloadMenu();downloadZip(scope);}));$('resetBtn').onclick=()=>{if(hasUnsavedWork)showLeaveModal();else location.reload();};
 ['city','reportDate','period','className','teacher','principal'].forEach(id=>$(id).addEventListener('input',()=>{markDirty();state.generated.clear();state.reportsReady=false;updateSelectionUI();if(state.selected)refreshPreview(state.selected);}));
 // Proteksi keluar halaman.
@@ -1227,4 +1264,4 @@ for(const btn of document.querySelectorAll('.seg button'))btn.onclick=()=>{
   document.querySelectorAll('.seg button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');state.level=nextLevel;$('className').value='GLOW CLASS';clearMsg();renderSignatureEditor();if(state.workbook)parseWorkbook();
 };
 function wireDrop(id,handler){const el=$(id);for(const ev of ['dragenter','dragover'])el.addEventListener(ev,e=>{e.preventDefault();el.classList.add('drag');});for(const ev of ['dragleave','drop'])el.addEventListener(ev,e=>{e.preventDefault();el.classList.remove('drag');});el.addEventListener('drop',e=>handler(e.dataTransfer.files));}
-wireDrop('excelDrop',files=>{const f=[...files].find(x=>/\.xlsx?$|\.xlsm$/i.test(x.name));if(f)loadExcel(f);});wireDrop('photoDrop',files=>loadPhotos([...files].filter(f=>f.type.startsWith('image/'))));
+wireDrop('excelDrop',files=>{const f=[...files].find(x=>/\.xlsx?$|\.xlsm$/i.test(x.name));if(f)loadExcel(f);});wireDrop('photoDrop',files=>loadPhotos([...files]));

@@ -2836,3 +2836,19 @@ body.modal-open {
     min-height: 1200px;
   }
 }
+
+/* Pilihan upload foto yang kompatibel dengan browser lintas sistem operasi. */
+.photo-upload-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+@media (max-width: 560px) {
+  .photo-upload-actions {
+    width: 100%;
+  }
+  .photo-upload-actions .btn {
+    flex: 1 1 140px;
+  }
+}

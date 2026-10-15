@@ -98,9 +98,13 @@
           </div>
           <div class="file-info" id="excelInfo">Belum ada file Excel.</div>
           <div class="drop compact-drop" id="photoDrop">
-            <div class="drop-leading"><span class="drop-icon photo-drop-icon">IMG</span><div><b>Folder foto siswa</b><p>Upload semua foto sekaligus.</p></div></div>
-            <button class="btn btn-secondary" id="photoBtn">Pilih Folder</button>
-            <input id="photoInput" type="file" accept="image/*" webkitdirectory directory multiple hidden>
+            <div class="drop-leading"><span class="drop-icon photo-drop-icon">IMG</span><div><b>Folder foto siswa</b><p>Pilih folder atau pilih banyak foto sekaligus.</p></div></div>
+            <div class="photo-upload-actions">
+              <button class="btn btn-secondary" id="photoBtn" type="button">Pilih Folder</button>
+              <button class="btn btn-secondary" id="photoFilesBtn" type="button">Pilih Banyak Foto</button>
+            </div>
+            <input id="photoInput" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.bmp,.avif" webkitdirectory directory multiple hidden>
+            <input id="photoFilesInput" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.bmp,.avif" multiple hidden>
           </div>
           <div class="file-info" id="photoInfo">Belum ada foto.</div>
           <div class="note"><b>Tips:</b> gunakan nama file foto yang sama persis dengan nama lengkap siswa. Foto yang belum cocok bisa ditambahkan manual dari daftar siswa.</div>
@@ -184,7 +188,7 @@
             <div class="preview-head"><div><span class="preview-kicker">PREVIEW</span><h3 id="previewTitle">Preview rapor</h3><small id="previewMeta">Pilih siswa</small></div><span class="preview-note">Tampilan sebelum diunduh</span></div>
             <div class="preview-frame" id="previewFrame"><div class="preview-placeholder">Preview akan muncul setelah Excel terbaca.</div></div>
             <div class="preview-actions"><button class="btn btn-light" id="manualPhotoBtn" disabled>📷 Tambah foto</button><button class="btn btn-light download-pdf-btn" id="downloadOneBtn" disabled>Unduh PDF</button><div class="download-menu" id="downloadMenu"><button class="btn btn-primary download-zip-btn" id="downloadZipBtn" disabled>Unduh ZIP <span>⌄</span></button><div class="download-menu-popover" id="downloadMenuPopover" aria-hidden="true"><div class="download-menu-head"><b>Pilih isi ZIP</b><small id="downloadMenuHint">Tentukan siswa yang ingin disertakan.</small></div><button type="button" data-download-scope="selected"><span>✓</span><span><b>Siswa yang dipilih</b><small>Hanya centang yang aktif</small></span></button><button type="button" data-download-scope="visible"><span>⌂</span><span><b>Guru yang sedang dipilih</b><small id="downloadVisibleLabel">Semua siswa yang tampil</small></span></button><button type="button" data-download-scope="all"><span>＋</span><span><b>Semua siswa</b><small>Semua data di Excel</small></span></button></div></div></div>
-            <input id="manualPhotoInput" type="file" accept="image/*" hidden>
+            <input id="manualPhotoInput" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.bmp,.avif" hidden>
           </div>
         </div>
       </div>
