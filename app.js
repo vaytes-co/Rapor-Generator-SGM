@@ -638,12 +638,14 @@ async function loadPhotos(files) {
     }
 
     try {
-      // Browser sering tidak dapat menampilkan HEIC/HEIF secara langsung.
-      // Simpan file asli untuk PDF, tetapi gunakan PNG hasil konversi untuk thumbnail.
-      // Semua thumbnail dibuat dari PNG yang dinormalisasi.
-      // Ini menghindari ikon rusak pada HEIC/HEIF dan MIME type kosong di Linux.
-      const pngBytes = await imageFileToPng(file);
-      const thumbnailBlob = new Blob([pngBytes], { type: "image/png" });
+      // Gunakan gambar asli untuk format yang browser bisa tampilkan langsung.
+      // Konversi khusus hanya untuk HEIC/HEIF agar format normal tidak gagal
+      // hanya karena dukungan createImageBitmap berbeda antar-browser/OS.
+      let thumbnailBlob = file;
+      if (isHeicFile(file)) {
+        const pngBytes = await imageFileToPng(file);
+        thumbnailBlob = new Blob([pngBytes], { type: "image/png" });
+      }
 
       const url = URL.createObjectURL(thumbnailBlob);
       state.photos.set(key, { file, url });
@@ -1167,7 +1169,45 @@ $('signaturePageSelect')?.addEventListener('change',()=>{renderSignatureEditor()
 $('resetBiodataBtn')?.addEventListener('click',()=>{resetBiodataConfig();updateSettingsOverview();});
 $('resetSignatureBtn')?.addEventListener('click',()=>{const kind=signatureUiKind();resetSignatureConfig(kind,signatureUiPageIndex());});
 
-$('reportDate').value=currentDate();$('excelBtn').onclick=()=>$('excelInput').click();$('photoBtn').onclick=()=>$('photoInput').click();
+$('reportDate').value=currentDate();$('excelBtn').onclick=()=>$('excelInput').click();
+
+// Pemilih folder lintas browser/OS. File System Access API digunakan jika tersedia;
+// jika tidak, fallback ke input folder dan pengguna tetap bisa memilih banyak foto.
+async function collectImagesFromDirectory(handle, output) {
+  for await (const entry of handle.values()) {
+    if (entry.kind === 'file') {
+      const file = await entry.getFile();
+      if (isPotentialImageFile(file)) output.push(file);
+    } else if (entry.kind === 'directory') {
+      await collectImagesFromDirectory(entry, output);
+    }
+  }
+}
+
+async function choosePhotoFolder() {
+  if (typeof window.showDirectoryPicker === 'function') {
+    try {
+      const directory = await window.showDirectoryPicker({ mode: 'read' });
+      const files = [];
+      await collectImagesFromDirectory(directory, files);
+      if (!files.length) {
+        showMsg('Folder ini tidak berisi file gambar yang didukung.', 'info');
+        return;
+      }
+      await loadPhotos(files);
+      return;
+    } catch (error) {
+      if (error?.name === 'AbortError') return;
+      console.warn('Pemilih folder modern gagal; memakai fallback input file.', error);
+    }
+  }
+
+  // Fallback untuk Firefox/browser yang belum mendukung showDirectoryPicker.
+  // Browser yang tidak mendukung webkitdirectory masih dapat memilih banyak file.
+  $('photoInput').click();
+}
+
+$('photoBtn').onclick=choosePhotoFolder;
 $('photoFilesBtn').onclick=()=>$('photoFilesInput').click();
 $('excelInput').onchange=e=>{if(e.target.files[0])loadExcel(e.target.files[0]);e.target.value='';};
 $('photoInput').onchange=e=>{if(e.target.files?.length)loadPhotos([...e.target.files]);e.target.value='';};

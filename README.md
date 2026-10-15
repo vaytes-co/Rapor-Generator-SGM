@@ -16,8 +16,8 @@ The localStorage keys were versioned so the new defaults are applied instead of 
 
 ## Upload foto lintas sistem operasi
 
-- Gunakan **Pilih Folder** untuk memilih satu folder foto jika browser/sistem operasi mendukung pemilihan folder.
-- Jika pemilih folder tidak tersedia di Linux atau browser tertentu, gunakan **Pilih Banyak Foto**. Pada dialog file, buka folder foto lalu pilih beberapa foto sekaligus (misalnya `Ctrl+A` untuk memilih semua file yang terlihat).
-- Foto HEIC/HEIF dikonversi menjadi PNG untuk thumbnail dan diproses lagi saat dibuat ke PDF. Decoder HEIC dimuat saat dibutuhkan dari CDN jsDelivr, sehingga koneksi internet diperlukan untuk konversi HEIC/HEIF.
+- Tombol **Pilih Folder** memakai pemilih folder modern jika tersedia (membutuhkan browser yang mendukung File System Access API dan konteks aman seperti HTTPS). Jika tidak tersedia, tombol beralih ke pemilih file sebagai fallback.
+- **Pilih Banyak Foto** adalah opsi lintas browser/OS. Di dialog file, buka folder foto lalu pilih banyak foto sekaligus (misalnya `Ctrl+A` untuk memilih semua gambar yang terlihat).
+- Foto JPG/PNG/WebP memakai URL file asli untuk thumbnail agar tidak bergantung pada dukungan konversi canvas yang berbeda antar-browser. HEIC/HEIF dikonversi menjadi PNG untuk thumbnail. Decoder HEIC dimuat saat dibutuhkan dari CDN jsDelivr, sehingga koneksi internet diperlukan untuk konversi HEIC/HEIF.
 - Pencocokan otomatis tetap menggunakan nama file foto dan nama siswa. Pastikan nama file foto sesuai dengan nama siswa.
 
