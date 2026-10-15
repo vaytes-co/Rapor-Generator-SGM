@@ -757,7 +757,48 @@ function selectStudent(student,rerender=true){state.selected=student;if(rerender
 
 function drawIdentity(page,student){const vals={name:student.name,gender:student.gender,place:student.place,birth:fmtDate(student.birth),father:student.father,mother:student.mother,job:student.job,address:student.address,phone:student.phone};const cfg=getBiodataConfig();for(const [key,x,y,w,h] of IDENTITY_BOXES)writeTransparent(page,{x:x+cfg.x,y:y+cfg.y,w,h},vals[key],{size:cfg.size});}
 function drawHeader(page,student,set){const name=clean(student.displayName)||student.name;const infant=state.type==='infant';const bars=[{x:312.3,y:235,w:infant?255:269.5,h:infant?23.3:20.6,label:'NAMA',value:name},{x:312.3,y:262.3,w:infant?255:269.5,h:infant?22.2:20.6,label:'PERIODE / TA',value:set.period},{x:312.3,y:289.6,w:infant?255:269.5,h:infant?21.5:20.6,label:'KELAS',value:set.className},{x:397.4,y:205.5,w:infant?169.8:185.6,h:infant?19.2:18.7,label:'CABANG',value:set.city}];for(const b of bars){fillRect(page,b);drawText(page,b.label,b.x+3,b.y+3,110,12,COLORS.white,'left',true);drawText(page,':',b.x+(b.label==='CABANG'?58:112),b.y+3,12,12,COLORS.white,'left',true);const vx=b.x+(b.label==='CABANG'?66:118);drawText(page,b.value,vx,b.y+3,b.w-(vx-b.x)-5,12,COLORS.white,'left',true);}}
-async function drawPhoto(page,photo,doc){if(!photo)return;const sourceBlob=photo.blob||photo.file;const bytes=new Uint8Array(await sourceBlob.arrayBuffer());let img;try{img=await doc.embedJpg(bytes);}catch{try{img=await doc.embedPng(bytes);}catch{const png=await imageFileToPng(sourceBlob);img=await doc.embedPng(png);}}const box={x:146.6,y:218.9,w:61.1,h:84};const scale=Math.min(box.w/img.width,box.h/img.height);const w=img.width*scale,h=img.height*scale;page.drawImage(img,{x:box.x+(box.w-w)/2,y:page.getHeight()-box.y-box.h+(box.h-h)/2,width:w,height:h});}
+function getPhotoSettings(){
+  const readNumber = (id, fallback, min, max) => {
+    const value = Number($(id)?.value);
+    return Number.isFinite(value) ? Math.max(min, Math.min(value, max)) : fallback;
+  };
+  return {
+    widthCm: readNumber('photoWidthCm', 3, 0.5, 10),
+    heightCm: readNumber('photoHeightCm', 4, 0.5, 10),
+    xCm: readNumber('photoXcm', 4.4, 0, 50),
+    yCm: readNumber('photoYcm', 7.2, 0, 50)
+  };
+}
+
+async function drawPhoto(page,photo,doc){
+  if(!photo)return;
+  const sourceBlob=photo.blob||photo.file;
+  const bytes=new Uint8Array(await sourceBlob.arrayBuffer());
+  let img;
+  try{img=await doc.embedJpg(bytes);}
+  catch{
+    try{img=await doc.embedPng(bytes);}
+    catch{const png=await imageFileToPng(sourceBlob);img=await doc.embedPng(png);}
+  }
+
+  // Konversi cm ke PDF points (72 points = 1 inch, 1 inch = 2.54 cm).
+  const photoSettings=getPhotoSettings();
+  const pointsPerCm=72/2.54;
+  const box={
+    x:photoSettings.xCm*pointsPerCm,
+    y:photoSettings.yCm*pointsPerCm,
+    w:photoSettings.widthCm*pointsPerCm,
+    h:photoSettings.heightCm*pointsPerCm
+  };
+  const scale=Math.min(box.w/img.width,box.h/img.height);
+  const w=img.width*scale,h=img.height*scale;
+  page.drawImage(img,{
+    x:box.x+(box.w-w)/2,
+    y:page.getHeight()-box.y-box.h+(box.h-h)/2,
+    width:w,
+    height:h
+  });
+}
 
 
 let heic2anyLoaderPromise = null;
@@ -1232,6 +1273,8 @@ $('manualPhotoInput').onchange=async e=>{
 };$('generateBtn').onclick=()=>generateAll(true);$('downloadZipBtn').onclick=downloadZip;
 $('teacherFilter')?.addEventListener('change',()=>{const filtered=getFilteredStudents();state.selected=filtered[0]||null;if(!state.selected){$('previewTitle').textContent='Preview rapor';$('previewMeta').textContent='Tidak ada siswa pada filter ini.';$('previewFrame').innerHTML='<div class="preview-placeholder">Tidak ada siswa untuk ditampilkan.</div>';$('downloadOneBtn').disabled=true;$('manualPhotoBtn').disabled=true;}updateUI();});$('selectVisibleBtn')?.addEventListener('click',()=>{for(const s of getFilteredStudents())state.checked.add(s.id);renderStudents();updateSelectionUI();});$('clearSelectionBtn')?.addEventListener('click',()=>{for(const s of getFilteredStudents())state.checked.delete(s.id);renderStudents();updateSelectionUI();});$('downloadOneBtn').onclick=async()=>{if(!state.selected)return;if(!state.reportsReady){showMsg('Proses semua rapor terlebih dahulu sebelum mengunduh.','info');return;}try{const blob=state.generated.get(state.selected.id)||await generatePdf(state.selected);state.generated.set(state.selected.id,blob);saveBlob(blob,`${safeFile(state.selected.name)}.pdf`);openExportSuccess(1,'dokumen',`Rapor ${state.selected.name} sudah diunduh.`);}catch(e){showMsg(e.message||'Gagal membuat PDF.','error');}};$('downloadZipBtn').onclick=()=>toggleDownloadMenu();document.querySelectorAll('[data-download-scope]').forEach(btn=>btn.addEventListener('click',()=>{if(btn.disabled)return;const scope=btn.dataset.downloadScope;closeDownloadMenu();downloadZip(scope);}));$('resetBtn').onclick=()=>{if(hasUnsavedWork)showLeaveModal();else location.reload();};
 ['city','reportDate','period','className','teacher','principal'].forEach(id=>$(id).addEventListener('input',()=>{markDirty();state.generated.clear();state.reportsReady=false;updateSelectionUI();if(state.selected)refreshPreview(state.selected);}));
+['photoWidthCm','photoHeightCm','photoXcm','photoYcm'].forEach(id=>$(id)?.addEventListener('input',()=>{markDirty();state.generated.clear();state.reportsReady=false;updateSelectionUI();if(state.selected)refreshPreview(state.selected);}));
+$('resetPhotoSizeBtn')?.addEventListener('click',()=>{ $('photoWidthCm').value='3'; $('photoHeightCm').value='4'; $('photoXcm').value='4.4'; $('photoYcm').value='7.2'; markDirty(); state.generated.clear(); state.reportsReady=false; updateSelectionUI(); if(state.selected)refreshPreview(state.selected); });
 // Proteksi keluar halaman.
 // Browser tetap dapat menampilkan dialog native untuk refresh/tutup tab dari UI browser.
 // Semua aksi yang bisa kita intercept dari halaman memakai modal custom di bawah.

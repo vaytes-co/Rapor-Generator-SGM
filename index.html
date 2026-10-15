@@ -122,6 +122,19 @@
         <details class="advanced-settings" id="advancedSettings">
           <summary><span><em>Pengaturan lanjutan</em><b>Atur posisi rapor</b><small>Sesuaikan biodata, tanda tangan, dan detail halaman tanpa mengganggu tampilan utama.</small></span><i>+</i></summary>
           <div class="settings-overview"><div><span>Mode saat ini</span><b id="settingsModeText">Posisi standar</b></div><div><span>Biodata</span><b id="settingsBiodataText">X 0 · Y 5 · 12 pt</b></div><div><span>Tanda tangan</span><b id="settingsSignatureText">Halaman 2</b></div></div>
+          <div class="page-setting-card photo-size-settings">
+            <div class="page-setting-title"><div><b>Ukuran foto siswa</b><span>Atur ukuran foto yang dimasukkan ke PDF. Default 3 × 4 cm.</span></div><button type="button" class="btn btn-light btn-xs" id="resetPhotoSizeBtn">Reset</button></div>
+            <div class="two photo-size-fields">
+              <div class="field"><label for="photoWidthCm">LEBAR FOTO (CM)</label><input id="photoWidthCm" type="number" min="0.5" max="10" step="0.1" value="3" inputmode="decimal"></div>
+              <div class="field"><label for="photoHeightCm">TINGGI FOTO (CM)</label><input id="photoHeightCm" type="number" min="0.5" max="10" step="0.1" value="4" inputmode="decimal"></div>
+            </div>
+            <div class="photo-position-heading"><b>Posisi foto</b><span>Ubah titik awal foto pada halaman PDF.</span></div>
+            <div class="two photo-size-fields photo-position-fields">
+              <div class="field"><label for="photoXcm">POSISI HORIZONTAL / X (CM)</label><input id="photoXcm" type="number" min="0" max="50" step="0.1" value="4.4" inputmode="decimal"></div>
+              <div class="field"><label for="photoYcm">POSISI VERTIKAL / Y (CM)</label><input id="photoYcm" type="number" min="0" max="50" step="0.1" value="7.2" inputmode="decimal"></div>
+            </div>
+            <div class="page-setting-hint">X dihitung dari tepi kiri halaman. Y dihitung dari tepi atas halaman. Pengaturan ukuran dan posisi diterapkan ke preview serta PDF.</div>
+          </div>
           <div class="page-settings" id="pageSettings">
             <div class="page-settings-head"><div><b>Pengaturan posisi per halaman</b><small>Setiap template mengikuti jumlah halaman aslinya.</small></div></div>
             <div class="page-setting-card biodata-setting-card">

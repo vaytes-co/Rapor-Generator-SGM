@@ -2852,3 +2852,14 @@ body.modal-open {
     flex: 1 1 140px;
   }
 }
+
+
+/* Pengaturan ukuran foto siswa */
+.photo-size-settings { margin-bottom: 14px; }
+.photo-size-fields { margin-top: 12px; }
+.photo-size-fields input { width: 100%; }
+
+.photo-position-heading { display: flex; flex-direction: column; gap: 3px; margin-top: 16px; }
+.photo-position-heading b { font-size: 13px; }
+.photo-position-heading span { color: var(--muted, #6b7280); font-size: 12px; }
+.photo-position-fields { margin-top: 8px; }
