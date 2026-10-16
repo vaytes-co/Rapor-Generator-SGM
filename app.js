@@ -627,31 +627,96 @@ function updatePhotoProgress(done,total,label='Memproses foto'){
   if(done>=total){photoProgressHideTimer=setTimeout(()=>{wrap.hidden=true;wrap.classList.remove('is-complete');photoProgressHideTimer=null;},1300);}
 }
 
+// Buat thumbnail kecil khusus tampilan daftar/preview agar puluhan foto resolusi tinggi
+// tidak membuat browser menghabiskan terlalu banyak memori. File asli tetap dipakai untuk PDF.
+async function createPhotoThumbnail(blob, maxSide = 320) {
+  let bitmap = null;
+  try {
+    if (typeof createImageBitmap === 'function') {
+      bitmap = await createImageBitmap(blob);
+      const ratio = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+      const width = Math.max(1, Math.round(bitmap.width * ratio));
+      const height = Math.max(1, Math.round(bitmap.height * ratio));
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d', { alpha: false });
+      if (!ctx) return blob;
+      ctx.drawImage(bitmap, 0, 0, width, height);
+      const thumb = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.78));
+      return thumb || blob;
+    }
+  } catch (error) {
+    console.warn('Thumbnail foto tidak dapat dibuat; memakai file asli.', error);
+  } finally {
+    if (bitmap && typeof bitmap.close === 'function') bitmap.close();
+  }
+  return blob;
+}
+
 async function loadPhotos(files) {
   markDirty();
-  for (const photo of state.photos.values()) { if (photo?.url) URL.revokeObjectURL(photo.url); }
-  state.photos.clear(); state.generated.clear(); state.reportsReady = false;
-  const selectedFiles = Array.from(files || []), accepted = [], rejected = [], info = $('photoInfo');
-  if (!selectedFiles.length) { if(info)info.textContent='Tidak ada foto yang dipilih.'; updatePhotoProgress(0,0); return; }
-  if(info){info.textContent=`Memproses ${selectedFiles.length} file foto...`;info.classList.remove('ok');}
-  updatePhotoProgress(0,selectedFiles.length,'Menyiapkan foto…');
-  let processed=0;
-  for (const file of selectedFiles) {
-    try {
-      if (!isPotentialImageFile(file)) { rejected.push(file.name||'File tanpa nama'); continue; }
-      const key=norm(file.name); if(!key){rejected.push(file.name||'Nama file kosong');continue;}
-      let thumbnailBlob=file;
-      if(isHeicFile(file)){const pngBytes=await imageFileToPng(file);thumbnailBlob=new Blob([pngBytes],{type:'image/png'});}
-      const url=URL.createObjectURL(thumbnailBlob);
-      state.photos.set(key,{file,blob:thumbnailBlob,url}); accepted.push(file.name);
-    } catch(error) { console.error(`Gagal memproses foto "${file.name}":`,error); rejected.push(file.name||'File tanpa nama'); }
-    finally { processed++; updatePhotoProgress(processed,selectedFiles.length,'Memproses foto…'); }
+  state.generated.clear(); state.reportsReady = false;
+  const selectedFiles = Array.from(files || []).filter(Boolean);
+  const accepted = [], rejected = [], info = $('photoInfo');
+  if (!selectedFiles.length) {
+    if(info)info.textContent='Tidak ada foto yang dipilih.';
+    updatePhotoProgress(0,0);
+    return;
   }
+  if(info){info.textContent=`Menyiapkan ${selectedFiles.length} file foto...`;info.classList.remove('ok');}
+  updatePhotoProgress(0,selectedFiles.length,'Menyiapkan foto…');
+
+  // Batasi pekerjaan bersamaan agar konversi HEIC dan pembuatan thumbnail tidak
+  // memenuhi CPU/RAM ketika folder berisi puluhan atau ratusan foto.
+  const nextPhotos = new Map();
+  let cursor = 0, processed = 0;
+  const concurrency = Math.min(3, selectedFiles.length);
+  const worker = async () => {
+    while (true) {
+      const index = cursor++;
+      if (index >= selectedFiles.length) return;
+      const file = selectedFiles[index];
+      try {
+        if (!isPotentialImageFile(file)) { rejected.push(file.name||'File tanpa nama'); continue; }
+        const key = norm(file.name);
+        if (!key) { rejected.push(file.name||'Nama file kosong'); continue; }
+        let originalBlob = file;
+        if (isHeicFile(file)) {
+          const pngBytes = await imageFileToPng(file);
+          originalBlob = new Blob([pngBytes], {type:'image/png'});
+        }
+        const thumbnailBlob = await createPhotoThumbnail(originalBlob);
+        const url = URL.createObjectURL(thumbnailBlob);
+        nextPhotos.set(key, {file, blob:originalBlob, url, thumbnailBlob});
+        accepted.push(file.name);
+      } catch(error) {
+        console.error(`Gagal memproses foto "${file.name}":`,error);
+        rejected.push(file.name||'File tanpa nama');
+      } finally {
+        processed++;
+        // Perbarui popup tiap beberapa foto saja agar rendering progress tidak ikut
+        // menjadi sumber lag; hitungan akhir selalu diperbarui.
+        if (processed % 3 === 0 || processed === selectedFiles.length) {
+          updatePhotoProgress(processed,selectedFiles.length,'Mengoptimalkan foto…');
+        }
+      }
+    }
+  };
+  await Promise.all(Array.from({length:concurrency}, () => worker()));
+
+  // Ganti foto lama hanya setelah pemrosesan selesai agar data sebelumnya tidak hilang
+  // jika pengguna membatalkan pemilih folder atau proses pemrosesan gagal.
+  for (const photo of state.photos.values()) if (photo?.url) URL.revokeObjectURL(photo.url);
+  state.photos = nextPhotos;
   if(info){info.textContent=`${accepted.length} foto siap dicocokkan`+(rejected.length?` · ${rejected.length} gagal diproses`:'');info.classList.toggle('ok',accepted.length>0);}
-  if(rejected.length){console.warn('File foto yang gagal diproses:',rejected);if(!accepted.length)showMsg('Foto belum berhasil diproses. Periksa koneksi internet untuk decoder HEIC/HEIF dan lihat Console (F12) untuk detail.','error');}
+  if(rejected.length){
+    console.warn('File foto yang gagal diproses:',rejected);
+    if(!accepted.length)showMsg('Foto belum berhasil diproses. Periksa format file dan lihat Console (F12) untuk detail.','error');
+  }
   updatePhotoProgress(selectedFiles.length,selectedFiles.length,`Selesai · ${accepted.length} foto siap`);
   if(state.students.length)updateUI();
 }
+
 function getTeacherName(student){return clean(student?.teacher)||'Tanpa nama guru';}
 function getFilteredStudents(){
   const value=clean($('teacherFilter')?.value||'');
@@ -1216,6 +1281,18 @@ async function collectImagesFromDirectory(handle, output) {
     if (entry.kind === 'file') {
       const file = await entry.getFile();
       if (isPotentialImageFile(file)) output.push(file);
+      if (output.length % 10 === 0) {
+        const wrap = $('photoProgress');
+        if (wrap) {
+          if (wrap.parentElement !== document.body) document.body.appendChild(wrap);
+          wrap.hidden = false;
+          $('photoProgressLabel').textContent = 'Membaca isi folder…';
+          $('photoProgressPercent').textContent = '…';
+          $('photoProgressBar').style.width = '12%';
+          $('photoProgressCount').textContent = `${output.length} foto ditemukan`;
+        }
+        await new Promise(resolve => requestAnimationFrame(resolve));
+      }
     } else if (entry.kind === 'directory') {
       await collectImagesFromDirectory(entry, output);
     }
@@ -1227,21 +1304,24 @@ async function choosePhotoFolder() {
     try {
       const directory = await window.showDirectoryPicker({ mode: 'read' });
       const files = [];
+      updatePhotoProgress(0,1,'Membaca isi folder…');
+      if ($('photoProgressCount')) $('photoProgressCount').textContent = 'Sedang mencari foto di folder';
       await collectImagesFromDirectory(directory, files);
       if (!files.length) {
+        updatePhotoProgress(0,0);
         showMsg('Folder ini tidak berisi file gambar yang didukung.', 'info');
         return;
       }
       await loadPhotos(files);
       return;
     } catch (error) {
+      updatePhotoProgress(0,0);
       if (error?.name === 'AbortError') return;
       console.warn('Pemilih folder modern gagal; memakai fallback input file.', error);
     }
   }
 
-  // Fallback untuk Firefox/browser yang belum mendukung showDirectoryPicker.
-  // Browser yang tidak mendukung webkitdirectory masih dapat memilih banyak file.
+  // Fallback browser: progress mulai setelah folder dipilih lewat dialog file.
   $('photoInput').click();
 }
 
