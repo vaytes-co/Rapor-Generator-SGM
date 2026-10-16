@@ -27,36 +27,36 @@ const SIGNATURE_DEFAULTS={
       p2:{
         date:{x:450,y:774.3,w:70,h:18,size:10,bold:true,italic:false,underline:false,align:'left'},
         teacher:{x:290,y:875,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
-        principal:{x:459,y:875,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:390,y:810,w:250,h:120}}
+        principal:{x:459,y:875,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:405,y:833,w:200,h:50}}
       },
       p3:{
         date:{x:450,y:735,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
         teacher:{x:315,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
-        principal:{x:460,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:390,y:782,w:250,h:120}}
+        principal:{x:460,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:390,y:795,w:230,h:75}}
       }
     },
     middle:{
       p2:{
         date:{x:430,y:775.5,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
         teacher:{x:315,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
-        principal:{x:460,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:390,y:800,w:250,h:120}}
+        principal:{x:460,y:870,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:400,y:815,w:215,h:65}}
       },
       p3:{
         date:{x:440,y:735,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
         teacher:{x:349,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
-        principal:{x:475,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:415,y:785,w:250,h:120}}
+        principal:{x:475,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:400,y:795,w:230,h:75}}
       }
     },
     upper:{
       p2:{
         date:{x:430,y:770,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
         teacher:{x:304,y:865,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
-        principal:{x:450,y:865,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:385,y:795,w:250,h:120}}
+        principal:{x:450,y:865,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:390,y:820,w:215,h:55}}
       },
       p3:{
         date:{x:435,y:753,w:70,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
         teacher:{x:347,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
-        principal:{x:470,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:405,y:785,w:250,h:120}}
+        principal:{x:470,y:860,w:95,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:405,y:802,w:215,h:68}}
       }
     }
   },
@@ -64,14 +64,14 @@ const SIGNATURE_DEFAULTS={
     p2:{
       date:{x:440,y:755,w:80,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
       teacher:{x:300,y:870,w:100,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
-      principal:{x:455,y:870,w:105,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:395,y:795,w:250,h:120}}
+      principal:{x:455,y:870,w:105,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:400,y:816,w:215,h:63}}
     }
   },
   infant:{
     p2:{
       date:{x:430,y:791.3,w:64,h:18,size:10.5,bold:true,italic:false,underline:false,align:'left'},
       teacher:{x:328,y:883,w:100,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center'},
-      principal:{x:445,y:883,w:110,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:390,y:805,w:250,h:120}}
+      principal:{x:445,y:883,w:110,h:18,size:10.5,bold:true,italic:false,underline:true,align:'center',digitalEnabled:false,digital:{x:390,y:833,w:215,h:60}}
     }
   }
 };
@@ -319,9 +319,9 @@ function signatureControl(role,label,cfg){
         <label class="sig-align">Rata <select data-role="${role}" data-field="align"><option value="left" ${r.align==='left'?'selected':''}>Kiri</option><option value="center" ${r.align==='center'?'selected':''}>Tengah</option><option value="right" ${r.align==='right'?'selected':''}>Kanan</option></select></label>
       </div>
       ${role==='principal'?`<div class="digital-signature-box">
-        <div class="digital-signature-head"><b>Tanda tangan digital pimpinan</b><span id="signatureFileStatus">${state.principalSignature?'✓ File siap digunakan':'Belum ada file'}</span></div>
-        <div class="digital-signature-actions"><button type="button" class="btn btn-secondary btn-xs" id="uploadSignatureBtn">Upload Tanda Tangan</button><button type="button" class="btn btn-light btn-xs" id="removeSignatureBtn" ${state.principalSignature?'':'disabled'}>Hapus</button><input id="principalSignatureInput" type="file" accept="image/png,image/jpeg,image/webp" hidden></div>
-        <label class="sig-check digital-toggle"><input type="checkbox" data-role="principal" data-field="digitalEnabled" ${r.digitalEnabled?'checked':''}><span>Gunakan tanda tangan digital menggantikan tanda tangan fisik</span></label>
+        <div class="digital-signature-head"><b>Tanda tangan digital pimpinan</b><span id="signatureFileStatus">${state.principalSignature?'✓ Tanda tangan custom siap':'Tanda tangan default tersedia'}</span></div>
+        <div class="digital-signature-actions"><button type="button" class="btn btn-secondary btn-xs" id="uploadSignatureBtn">Upload Tanda Tangan Custom (Opsional)</button><button type="button" class="btn btn-light btn-xs" id="removeSignatureBtn" ${state.principalSignature?'':'disabled'}>Gunakan Default</button><input id="principalSignatureInput" type="file" accept="image/png,image/jpeg,image/webp" hidden></div>
+        <label class="sig-check digital-toggle"><input type="checkbox" data-role="principal" data-field="digitalEnabled" ${r.digitalEnabled?'checked':''}><span>Gunakan tanda tangan digital default (centang saja, tanpa upload)</span></label>
         <div class="signature-control-grid digital-grid">
           <label>Posisi X <input class="sig-range" type="range" min="0" max="600" step="0.1" data-role="principal" data-field="digitalX" value="${r.digital.x}"><input class="sig-number" type="number" min="0" max="600" step="0.1" data-role="principal" data-field="digitalX" value="${r.digital.x}"></label>
           <label>Posisi Y <input class="sig-range" type="range" min="0" max="1000" step="0.1" data-role="principal" data-field="digitalY" value="${r.digital.y}"><input class="sig-number" type="number" min="0" max="1000" step="0.1" data-role="principal" data-field="digitalY" value="${r.digital.y}"></label>
@@ -385,8 +385,6 @@ function renderSignatureEditor(){
       if(state.principalSignature?.url)URL.revokeObjectURL(state.principalSignature.url);
       state.principalSignature=null;
       markDirty();
-      const cfg=signatureConfigForUi();
-      cfg.principal.digitalEnabled=false;
       saveSignatureStore();
       renderSignatureEditor();
       scheduleSignaturePreview(true);
@@ -404,25 +402,25 @@ const IDENTITY_BOXES=[
 
 const CONFIG={
   lower:{sheet:'LOWER',key:'glowLower',fields:COMMON_FIELDS,results:[
-    ['Perawatan Diri Sendiri',2,{x:201.6,y:365.1,w:90.7,h:16.9}],['Perawatan Lingkungan',2,{x:201.6,y:397.9,w:90.7,h:16.9}],['Perkembangan Psikomotorik',2,{x:201.6,y:430.7,w:90.7,h:36.3}],['Sikap',2,{x:201.6,y:482.9,w:90.1,h:16.1}],
-    ['Perkembangan Visual',2,{x:201.6,y:570,w:90.1,h:16.9}],['Pengembangan Auditori',2,{x:201.6,y:602.8,w:90.1,h:15.6}],['Pengembangan Gustatori',2,{x:201.6,y:634.3,w:90.1,h:31.2}],['Pengembangan Olfactory',2,{x:201.6,y:681.4,w:90.1,h:31.2}],['Pengembangan Indra Peraba',2,{x:201.6,y:728.5,w:90.1,h:31.2}],
-    ['Studi Alam',2,{x:490.2,y:363.5,w:91.6,h:15.9}],['Pengenalan dunia hewan',2,{x:490.2,y:395.3,w:91.6,h:16.9}],['Pengenalan dunia tumbuhan',2,{x:490.2,y:428.1,w:91.6,h:24.7}],['Pengenalan Sejarah',2,{x:490.2,y:471.3,w:91.6,h:24.7}],['Interaksi sosial',2,{x:487.7,y:584.3,w:91.6,h:15.9}],['Emosional',2,{x:487.7,y:616,w:91.6,h:18.8}],
-    ['Komunikasi dua arah',3,{x:201.6,y:373.3,w:90.1,h:19.6}],['Gerak & Lagu',3,{x:201.6,y:408.8,w:90.1,h:21.1}],['Pengembangan kosakata',3,{x:201.6,y:445.8,w:90.1,h:21.7}],['Penguasaan fonetik',3,{x:201.6,y:483.3,w:90.1,h:19.7}],['Persiapan menulis',3,{x:201.6,y:518.9,w:90.1,h:21.9}],
-    ['Pengenalan pola & bentuk',3,{x:492.8,y:373.3,w:90.1,h:19.6}],['Pengenalan kuantitas 1 - 10',3,{x:492.8,y:408.8,w:90.1,h:20.1}],['Pengenalan simbol 1 -10',3,{x:492.8,y:444.8,w:90.1,h:23.4}]
+    ['Perawatan Diri Sendiri',2,{x:201.6,y:363.1,w:90.7,h:16.9}],['Perawatan Lingkungan',2,{x:201.6,y:394.9,w:90.7,h:16.9}],['Perkembangan Psikomotorik',2,{x:201.6,y:429,w:90.7,h:36.3}],['Sikap',2,{x:201.6,y:479,w:90.1,h:16.1}],
+    ['Perkembangan Visual',2,{x:201.6,y:568,w:90.1,h:16.9}],['Pengembangan Auditori',2,{x:201.6,y:600,w:90.1,h:15.6}],['Pengembangan Gustatori',2,{x:201.6,y:632,w:90.1,h:31.2}],['Pengembangan Olfactory',2,{x:201.6,y:680,w:90.1,h:31.2}],['Pengembangan Indra Peraba',2,{x:201.6,y:727,w:90.1,h:31.2}],
+    ['Studi Alam',2,{x:490.2,y:362,w:91.6,h:15.9}],['Pengenalan dunia hewan',2,{x:490.2,y:394,w:91.6,h:16.9}],['Pengenalan dunia tumbuhan',2,{x:490.2,y:426,w:91.6,h:24.7}],['Pengenalan Sejarah',2,{x:490.2,y:469,w:91.6,h:24.7}],['Interaksi sosial',2,{x:487.7,y:583,w:91.6,h:15.9}],['Emosional',2,{x:487.7,y:615,w:91.6,h:18.8}],
+    ['Komunikasi dua arah',3,{x:201.6,y:372,w:90.1,h:19.6}],['Gerak & Lagu',3,{x:201.6,y:407,w:90.1,h:21.1}],['Pengembangan kosakata',3,{x:201.6,y:444,w:90.1,h:21.7}],['Penguasaan fonetik',3,{x:201.6,y:482,w:90.1,h:19.7}],['Persiapan menulis',3,{x:201.6,y:517,w:90.1,h:21.9}],
+    ['Pengenalan pola & bentuk',3,{x:492.8,y:372,w:90.1,h:19.6}],['Pengenalan kuantitas 1 - 10',3,{x:492.8,y:407,w:90.1,h:20.1}],['Pengenalan simbol 1 -10',3,{x:492.8,y:443,w:90.1,h:23.4}]
   ]},
   middle:{sheet:'MIDDLE',key:'glowMiddle',fields:COMMON_FIELDS,results:[
-    ['Perawatan Diri Sendiri',2,{x:201.6,y:365.1,w:90.7,h:15.9}],['Perawatan Lingkungan',2,{x:201.6,y:396.8,w:90.7,h:15.9}],['Perkembangan Psikomotorik',2,{x:201.6,y:428.6,w:90.7,h:36.3}],['Sikap',2,{x:201.6,y:480.4,w:90.7,h:16.1}],
-    ['Perkembangan Visual',2,{x:201.6,y:565.2,w:90.1,h:15.9}],['Pengembangan Auditori',2,{x:201.6,y:597,w:90.1,h:15.9}],['Pengembangan Gustatori',2,{x:201.6,y:628.8,w:90.1,h:31.2}],['Pengembangan Olfactory',2,{x:201.6,y:675.4,w:90.1,h:31.2}],['Pengembangan Indra Peraba',2,{x:201.6,y:722,w:90.1,h:31.2}],
-    ['Studi Alam',2,{x:490.2,y:363.5,w:91.6,h:15.9}],['Pengenalan dunia hewan',2,{x:490.2,y:395.3,w:91.6,h:15.9}],['Pengenalan dunia tumbuhan',2,{x:490.2,y:427.1,w:91.6,h:24.7}],['Pengenalan Sejarah',2,{x:490.2,y:470.3,w:91.6,h:24.6}],['Interaksi sosial',2,{x:487.7,y:584.3,w:91.6,h:15.9}],['Emosional',2,{x:487.7,y:616,w:91.6,h:18.8}],
-    ['Komunikasi dua arah',3,{x:201.6,y:377.4,w:90.1,h:23.4}],['Kemampuan bercerita',3,{x:201.6,y:416.7,w:90.1,h:20.2}],['Pengembangan kosakata',3,{x:201.6,y:452.8,w:90.1,h:26.1}],['Penguasaan fonetik',3,{x:201.6,y:494.8,w:90.1,h:25.8}],['Persiapan menulis',3,{x:201.6,y:536.5,w:90.1,h:22.3}],
-    ['Pengenalan nilai tempat',3,{x:492.8,y:375.4,w:90.1,h:24.8}],['Pengenalan kuantitas 11-99',3,{x:492.8,y:416.1,w:90.1,h:20.1}],['Pengenalan simbol 11 -99',3,{x:492.8,y:452.1,w:90.1,h:24.9}]
+    ['Perawatan Diri Sendiri',2,{x:201.6,y:363,w:90.7,h:15.9}],['Perawatan Lingkungan',2,{x:201.6,y:395,w:90.7,h:15.9}],['Perkembangan Psikomotorik',2,{x:201.6,y:427,w:90.7,h:36.3}],['Sikap',2,{x:201.6,y:478,w:90.7,h:16.1}],
+    ['Perkembangan Visual',2,{x:201.6,y:564,w:90.1,h:15.9}],['Pengembangan Auditori',2,{x:201.6,y:596,w:90.1,h:15.9}],['Pengembangan Gustatori',2,{x:201.6,y:627,w:90.1,h:31.2}],['Pengembangan Olfactory',2,{x:201.6,y:674,w:90.1,h:31.2}],['Pengembangan Indra Peraba',2,{x:201.6,y:721,w:90.1,h:31.2}],
+    ['Studi Alam',2,{x:490.2,y:362,w:91.6,h:15.9}],['Pengenalan dunia hewan',2,{x:490.2,y:393,w:91.6,h:15.9}],['Pengenalan dunia tumbuhan',2,{x:490.2,y:426,w:91.6,h:24.7}],['Pengenalan Sejarah',2,{x:490.2,y:469,w:91.6,h:24.6}],['Interaksi sosial',2,{x:487.7,y:583,w:91.6,h:15.9}],['Emosional',2,{x:487.7,y:615,w:91.6,h:18.8}],
+    ['Komunikasi dua arah',3,{x:201.6,y:376,w:90.1,h:23.4}],['Kemampuan bercerita',3,{x:201.6,y:415,w:90.1,h:20.2}],['Pengembangan kosakata',3,{x:201.6,y:451,w:90.1,h:26.1}],['Penguasaan fonetik',3,{x:201.6,y:493,w:90.1,h:25.8}],['Persiapan menulis',3,{x:201.6,y:535,w:90.1,h:22.3}],
+    ['Pengenalan nilai tempat',3,{x:492.8,y:374,w:90.1,h:24.8}],['Pengenalan kuantitas 11-99',3,{x:492.8,y:415,w:90.1,h:20.1}],['Pengenalan simbol 11 -99',3,{x:492.8,y:451,w:90.1,h:24.9}]
   ]},
   upper:{sheet:'UPPER',key:'glowUpper',fields:COMMON_FIELDS,results:[
-    ['Perawatan Diri Sendiri',2,{x:201.6,y:365.1,w:90.7,h:15.6}],['Perawatan Lingkungan',2,{x:201.6,y:396.5,w:90.7,h:17}],['Perkembangan Psikomotorik',2,{x:201.6,y:429.4,w:90.7,h:36.3}],['Sikap',2,{x:201.6,y:481.6,w:90.7,h:16.1}],
-    ['Perkembangan Visual',2,{x:201.6,y:565.2,w:90.1,h:16.9}],['Pengembangan Auditori',2,{x:201.6,y:598,w:90.1,h:15.6}],['Pengembangan Gustatori',2,{x:201.6,y:629.5,w:90.1,h:31.2}],['Pengembangan Olfactory',2,{x:201.6,y:676.6,w:90.1,h:31.2}],['Pengembangan Indra Peraba',2,{x:201.6,y:723.7,w:90.1,h:31.2}],
-    ['Studi Alam',2,{x:490.2,y:363.5,w:91.6,h:15.9}],['Pengenalan dunia hewan',2,{x:490.2,y:395.3,w:91.6,h:16.9}],['Pengenalan dunia tumbuhan',2,{x:490.2,y:428.1,w:91.6,h:24.7}],['Pengenalan Sejarah',2,{x:490.2,y:471.3,w:91.6,h:24.7}],['Interaksi sosial',2,{x:487.7,y:584.3,w:91.6,h:15.9}],['Emosional',2,{x:487.7,y:616,w:91.6,h:18.8}],
-    ['Pemahaman individu & respon',3,{x:201.6,y:373.3,w:90.1,h:36.4}],['Kemampuan mendengarkan & berbicara',3,{x:201.6,y:425.8,w:90.1,h:38.9}],['Pengembangan kosakata',3,{x:201.6,y:480.6,w:90.1,h:28}],['Membaca',3,{x:201.6,y:524.5,w:90.1,h:26.5}],['Menulis',3,{x:201.6,y:566.9,w:90.1,h:25.8}],
-    ['Pengoperasian sistem desimal',3,{x:498,y:375,w:90.2,h:33.4}],['Pengenalan matematika abstrak',3,{x:498,y:424.3,w:90.2,h:34.5}]
+    ['Perawatan Diri Sendiri',2,{x:201.6,y:363,w:90.7,h:15.6}],['Perawatan Lingkungan',2,{x:201.6,y:395,w:90.7,h:17}],['Perkembangan Psikomotorik',2,{x:201.6,y:428,w:90.7,h:36.3}],['Sikap',2,{x:201.6,y:478,w:90.7,h:16.1}],
+    ['Perkembangan Visual',2,{x:201.6,y:564,w:90.1,h:16.9}],['Pengembangan Auditori',2,{x:201.6,y:596,w:90.1,h:15.6}],['Pengembangan Gustatori',2,{x:201.6,y:628,w:90.1,h:31.2}],['Pengembangan Olfactory',2,{x:201.6,y:675,w:90.1,h:31.2}],['Pengembangan Indra Peraba',2,{x:201.6,y:721.7,w:90.1,h:31.2}],
+    ['Studi Alam',2,{x:490.2,y:361,w:91.6,h:15.9}],['Pengenalan dunia hewan',2,{x:490.2,y:393,w:91.6,h:16.9}],['Pengenalan dunia tumbuhan',2,{x:490.2,y:425,w:91.6,h:24.7}],['Pengenalan Sejarah',2,{x:490.2,y:469,w:91.6,h:24.7}],['Interaksi sosial',2,{x:487.7,y:582,w:91.6,h:15.9}],['Emosional',2,{x:487.7,y:614,w:91.6,h:18.8}],
+    ['Pemahaman individu & respon',3,{x:201.6,y:373.3,w:90.1,h:36.4}],['Kemampuan mendengarkan & berbicara',3,{x:201.6,y:425.8,w:90.1,h:38.9}],['Pengembangan kosakata',3,{x:201.6,y:480.6,w:90.1,h:28}],['Membaca',3,{x:201.6,y:524.5,w:90.1,h:26.5}],['Menulis',3,{x:201.6,y:565,w:90.1,h:25.8}],
+    ['Pengoperasian sistem desimal',3,{x:498,y:375,w:90.2,h:33.4}],['Pengenalan matematika abstrak',3,{x:498,y:423,w:90.2,h:34.5}]
   ]}
 };
 
@@ -496,7 +494,19 @@ function drawStyledText(page,text,x,top,w,size=12,color=COLORS.black,align='left
 }
 function wrapLines(text,w,size,font){const out=[];for(const paragraph of clean(text).split(/\n/)){let line='';for(const word of paragraph.split(/\s+/)){const test=line?`${line} ${word}`:word;if(font.widthOfTextAtSize(test,size)<=w)line=test;else{if(line)out.push(line);line=word;}}if(line)out.push(line);}return out;}
 function drawMultiline(page,text,x,top,w,h,size=11,color=COLORS.black,align='left',bold=false){const font=bold?fonts.bold:fonts.reg;let fs=size;let lines=wrapLines(text,w,fs,font);while(lines.length>Math.max(1,Math.floor(h/(fs*1.18)))&&fs>7){fs-=.3;lines=wrapLines(text,w,fs,font);}const lh=fs*1.18;lines.slice(0,Math.floor(h/lh)).forEach((line,i)=>drawText(page,line,x,top+i*lh,w,fs,color,align,bold));}
-function writeTransparent(page,box,text,opt={}){if(!clean(text))return;if(opt.center)drawText(page,text,box.x,box.y+(box.h-(opt.size||12))/2,box.w,opt.size||12,opt.color||COLORS.black,'center',!!opt.bold);else drawMultiline(page,text,box.x+2,box.y+2,box.w-4,box.h-4,opt.size||12,opt.color||COLORS.black,opt.align||'left',!!opt.bold);}
+function writeTransparent(page,box,text,opt={}){const value=clean(text)||'-';if(opt.center)drawText(page,value,box.x,box.y+(box.h-(opt.size||12))/2,box.w,opt.size||12,opt.color||COLORS.black,'center',!!opt.bold);else drawMultiline(page,value,box.x+2,box.y+2,box.w-4,box.h-4,opt.size||12,opt.color||COLORS.black,opt.align||'left',!!opt.bold);}
+function writeCenteredNote(page,box,text,baseSize=10.5){
+  const value=clean(text);if(!value)return;
+  const font=fonts.reg,padX=8,padY=5,maxW=Math.max(10,box.w-padX*2),maxH=Math.max(10,box.h-padY*2);
+  // Selalu hitung ulang baris dan tinggi blok pada ukuran font final, lalu pusatkan bloknya.
+  let size=baseSize,lines=wrapLines(value,maxW,size,font),lineH=size*1.2;
+  while(size>4 && (lines.length*lineH>maxH || lines.some(line=>font.widthOfTextAtSize(line,size)>maxW))){size=Math.max(4,size-0.25);lines=wrapLines(value,maxW,size,font);lineH=size*1.2;}
+  // Jika catatan sangat panjang, kecilkan lagi berdasarkan jumlah baris agar semua teks tetap masuk.
+  if(lines.length*lineH>maxH){size=Math.max(2.5,maxH/(Math.max(1,lines.length)*1.2));lines=wrapLines(value,maxW,size,font);lineH=size*1.2;}
+  const blockH=lines.length*lineH;
+  const top=box.y+padY+Math.max(0,(maxH-blockH)/2);
+  lines.forEach((line,i)=>drawText(page,line,box.x+padX,top+i*lineH,maxW,size,COLORS.black,'center',false));
+}
 function fillRect(page,box,color=COLORS.orange){page.drawRectangle({x:box.x,y:page.getHeight()-box.y-box.h,width:box.w,height:box.h,color,borderWidth:0});}
 
 function photoFor(student){
@@ -600,82 +610,48 @@ async function loadExcel(file){
 }
 
 
-async function loadPhotos(files) {
-  markDirty();
-
-  // Bersihkan URL thumbnail dari pemilihan sebelumnya.
-  for (const photo of state.photos.values()) {
-    if (photo?.url) URL.revokeObjectURL(photo.url);
-  }
-  state.photos.clear();
-  state.generated.clear();
-  state.reportsReady = false;
-
-  const selectedFiles = Array.from(files || []);
-  const accepted = [];
-  const rejected = [];
-  const info = $("photoInfo");
-
-  if (!selectedFiles.length) {
-    if (info) info.textContent = "Tidak ada foto yang dipilih.";
-    return;
-  }
-  if (info) {
-    info.textContent = `Memproses ${selectedFiles.length} file foto...`;
-    info.classList.remove("ok");
-  }
-
-  for (const file of selectedFiles) {
-    if (!isPotentialImageFile(file)) {
-      rejected.push(file.name || "File tanpa nama");
-      continue;
-    }
-
-    const key = norm(file.name);
-    if (!key) {
-      rejected.push(file.name || "Nama file kosong");
-      continue;
-    }
-
-    try {
-      // Gunakan gambar asli untuk format yang browser bisa tampilkan langsung.
-      // Konversi khusus hanya untuk HEIC/HEIF agar format normal tidak gagal
-      // hanya karena dukungan createImageBitmap berbeda antar-browser/OS.
-      let thumbnailBlob = file;
-      if (isHeicFile(file)) {
-        const pngBytes = await imageFileToPng(file);
-        thumbnailBlob = new Blob([pngBytes], { type: "image/png" });
-      }
-
-      const url = URL.createObjectURL(thumbnailBlob);
-      state.photos.set(key, { file, blob: thumbnailBlob, url });
-      accepted.push(file.name);
-    } catch (error) {
-      console.error(`Gagal memproses foto "${file.name}":`, error);
-      rejected.push(file.name || "File tanpa nama");
-    }
-  }
-
-  if (info) {
-    info.textContent =
-      `${accepted.length} foto siap dicocokkan` +
-      (rejected.length ? ` · ${rejected.length} gagal diproses` : "");
-    info.classList.toggle("ok", accepted.length > 0);
-  }
-
-  if (rejected.length) {
-    console.warn("File foto yang gagal diproses:", rejected);
-    if (!accepted.length) {
-      showMsg(
-        "Foto belum berhasil diproses. Periksa koneksi internet untuk decoder HEIC/HEIF dan lihat Console (F12) untuk detail.",
-        "error"
-      );
-    }
-  }
-
-  if (state.students.length) updateUI();
+let photoProgressHideTimer=null;
+function updatePhotoProgress(done,total,label='Memproses foto'){
+  const wrap=$('photoProgress');if(!wrap)return;
+  // Pindahkan popup langsung ke body agar tidak tertutup panel/list yang memiliki stacking context.
+  if(wrap.parentElement!==document.body)document.body.appendChild(wrap);
+  if(photoProgressHideTimer){clearTimeout(photoProgressHideTimer);photoProgressHideTimer=null;}
+  if(total<=0){wrap.hidden=true;wrap.classList.remove('is-complete');return;}
+  wrap.hidden=false;
+  wrap.classList.toggle('is-complete',done>=total && /Selesai|gagal/i.test(label));
+  const pct=Math.min(100,Math.round(done/total*100));
+  $('photoProgressLabel').textContent=label;
+  $('photoProgressPercent').textContent=`${pct}%`;
+  $('photoProgressBar').style.width=`${pct}%`;
+  $('photoProgressCount').textContent=`${done} dari ${total} foto`;
+  if(done>=total){photoProgressHideTimer=setTimeout(()=>{wrap.hidden=true;wrap.classList.remove('is-complete');photoProgressHideTimer=null;},1300);}
 }
 
+async function loadPhotos(files) {
+  markDirty();
+  for (const photo of state.photos.values()) { if (photo?.url) URL.revokeObjectURL(photo.url); }
+  state.photos.clear(); state.generated.clear(); state.reportsReady = false;
+  const selectedFiles = Array.from(files || []), accepted = [], rejected = [], info = $('photoInfo');
+  if (!selectedFiles.length) { if(info)info.textContent='Tidak ada foto yang dipilih.'; updatePhotoProgress(0,0); return; }
+  if(info){info.textContent=`Memproses ${selectedFiles.length} file foto...`;info.classList.remove('ok');}
+  updatePhotoProgress(0,selectedFiles.length,'Menyiapkan foto…');
+  let processed=0;
+  for (const file of selectedFiles) {
+    try {
+      if (!isPotentialImageFile(file)) { rejected.push(file.name||'File tanpa nama'); continue; }
+      const key=norm(file.name); if(!key){rejected.push(file.name||'Nama file kosong');continue;}
+      let thumbnailBlob=file;
+      if(isHeicFile(file)){const pngBytes=await imageFileToPng(file);thumbnailBlob=new Blob([pngBytes],{type:'image/png'});}
+      const url=URL.createObjectURL(thumbnailBlob);
+      state.photos.set(key,{file,blob:thumbnailBlob,url}); accepted.push(file.name);
+    } catch(error) { console.error(`Gagal memproses foto "${file.name}":`,error); rejected.push(file.name||'File tanpa nama'); }
+    finally { processed++; updatePhotoProgress(processed,selectedFiles.length,'Memproses foto…'); }
+  }
+  if(info){info.textContent=`${accepted.length} foto siap dicocokkan`+(rejected.length?` · ${rejected.length} gagal diproses`:'');info.classList.toggle('ok',accepted.length>0);}
+  if(rejected.length){console.warn('File foto yang gagal diproses:',rejected);if(!accepted.length)showMsg('Foto belum berhasil diproses. Periksa koneksi internet untuk decoder HEIC/HEIF dan lihat Console (F12) untuk detail.','error');}
+  updatePhotoProgress(selectedFiles.length,selectedFiles.length,`Selesai · ${accepted.length} foto siap`);
+  if(state.students.length)updateUI();
+}
 function getTeacherName(student){return clean(student?.teacher)||'Tanpa nama guru';}
 function getFilteredStudents(){
   const value=clean($('teacherFilter')?.value||'');
@@ -756,7 +732,18 @@ async function refreshPreview(student){$('previewTitle').textContent=student.nam
 function selectStudent(student,rerender=true){state.selected=student;if(rerender)renderStudents();refreshPreview(student);}
 
 function drawIdentity(page,student){const vals={name:student.name,gender:student.gender,place:student.place,birth:fmtDate(student.birth),father:student.father,mother:student.mother,job:student.job,address:student.address,phone:student.phone};const cfg=getBiodataConfig();for(const [key,x,y,w,h] of IDENTITY_BOXES)writeTransparent(page,{x:x+cfg.x,y:y+cfg.y,w,h},vals[key],{size:cfg.size});}
-function drawHeader(page,student,set){const name=clean(student.displayName)||student.name;const infant=state.type==='infant';const bars=[{x:312.3,y:235,w:infant?255:269.5,h:infant?23.3:20.6,label:'NAMA',value:name},{x:312.3,y:262.3,w:infant?255:269.5,h:infant?22.2:20.6,label:'PERIODE / TA',value:set.period},{x:312.3,y:289.6,w:infant?255:269.5,h:infant?21.5:20.6,label:'KELAS',value:set.className},{x:397.4,y:205.5,w:infant?169.8:185.6,h:infant?19.2:18.7,label:'CABANG',value:set.city}];for(const b of bars){fillRect(page,b);drawText(page,b.label,b.x+3,b.y+3,110,12,COLORS.white,'left',true);drawText(page,':',b.x+(b.label==='CABANG'?58:112),b.y+3,12,12,COLORS.white,'left',true);const vx=b.x+(b.label==='CABANG'?66:118);drawText(page,b.value,vx,b.y+3,b.w-(vx-b.x)-5,12,COLORS.white,'left',true);}}
+function drawHeader(page,student,set){const rawName=clean(student.displayName)||student.name;const originalWords=clean(rawName).split(/\s+/).filter(Boolean);const infant=state.type==='infant';const bars=[{x:312.3,y:235,w:infant?255:269.5,h:infant?23.3:20.6,label:'NAMA',value:''},{x:312.3,y:262.3,w:infant?255:269.5,h:infant?22.2:20.6,label:'PERIODE / TA',value:set.period},{x:312.3,y:289.6,w:infant?255:269.5,h:infant?21.5:20.6,label:'KELAS',value:set.className},{x:397.4,y:205.5,w:infant?169.8:185.6,h:infant?19.2:18.7,label:'CABANG',value:set.city}];
+  // Nama header: pertahankan font 12. Jika versi singkat awal masih terlalu lebar, singkat mulai kata ke-3.
+  const nameBar=bars[0];const nameX=nameBar.x+118;const nameWidth=nameBar.w-(nameX-nameBar.x)-5;const headerWords=[...originalWords];
+  for(let i=3;i<headerWords.length;i++){if(headerWords[i].length>3)headerWords[i]=`${headerWords[i][0]}.`;}
+  let headerName=headerWords.join(' ')||rawName;
+  if(fonts.reg.widthOfTextAtSize(headerName,12)>nameWidth){
+    const compactWords=[...originalWords];
+    for(let i=2;i<compactWords.length;i++){if(compactWords[i].length>2)compactWords[i]=`${compactWords[i][0]}.`;}
+    headerName=compactWords.join(' ')||rawName;
+  }
+  nameBar.value=headerName;
+  for(const b of bars){fillRect(page,b);drawText(page,b.label,b.x+3,b.y+3,110,12,COLORS.white,'left',true);drawText(page,':',b.x+(b.label==='CABANG'?58:112),b.y+3,12,12,COLORS.white,'left',true);const vx=b.x+(b.label==='CABANG'?66:118);const valueWidth=b.w-(vx-b.x)-5;if(b.label==='NAMA'){drawStyledText(page,b.value,vx,b.y+3,valueWidth,12,COLORS.white,'left',{bold:true,fit:false});}else{drawText(page,b.value,vx,b.y+3,valueWidth,12,COLORS.white,'left',true);}}}
 function getPhotoSettings(){
   const readNumber = (id, fallback, min, max) => {
     const value = Number($(id)?.value);
@@ -978,25 +965,25 @@ async function imageFileToPng(file) {
 
 function noteBox(kind,pageIndex){
   if(kind==='infant'){
-    return {x:45.8,y:746.3,w:521.4,h:69.2};
+    return {x:45.8,y:730,w:521.4,h:69.2};
   }
 
   if(kind==='sunny'){
-    return {x:299.8,y:647.5,w:294.8,h:106};
+    return {x:299.8,y:635,w:294.8,h:106};
   }
 
   // Glow Middle
   if(state.level === 'middle'){
-    return {x:20,y:635,w:562,h:133};
+    return {x:20,y:600,w:562,h:133};
   }
 
   // Glow Upper
   if(state.level === 'upper'){
-    return {x:20,y:640,w:562,h:133};
+    return {x:20,y:615,w:562,h:133};
   }
 
   // Glow Lower
-  return {x:20,y:615,w:562,h:133};
+  return {x:20,y:595,w:562,h:133};
 }
 function signaturePositions(kind,pageIndex){
   const cfg=getSignatureConfig(kind,pageIndex);
@@ -1014,6 +1001,21 @@ async function embedSignatureImage(doc,file){
   }
 }
 
+let defaultSignatureBytesPromise=null;
+async function embedDefaultSignature(doc){
+  if(!defaultSignatureBytesPromise){
+    defaultSignatureBytesPromise=fetch('assets/img/signature-default.png')
+      .then(response=>{
+        if(!response.ok)throw new Error('File tanda tangan default tidak ditemukan.');
+        return response.arrayBuffer();
+      })
+      .then(buffer=>new Uint8Array(buffer))
+      .catch(err=>{defaultSignatureBytesPromise=null;throw err;});
+  }
+  const bytes=await defaultSignatureBytesPromise;
+  return doc.embedPng(bytes);
+}
+
 async function drawDigitalSignature(page,img,box){
   if(!img||!box)return;
   const scale=Math.min(box.w/img.width,box.h/img.height);
@@ -1023,13 +1025,15 @@ async function drawDigitalSignature(page,img,box){
 
 async function generatePdf(student){getLibraries();const cfg=state.type==='sunny'?SUNNY:state.type==='infant'?INFANT:CONFIG[state.level];const bytes=await getTemplate(cfg.key);const doc=await PDFDocument.load(bytes);await setupFonts(doc);const set=settings();const pages=doc.getPages();const kind=state.type==='sunny'?'sunny':state.type==='infant'?'infant':state.level;drawIdentity(pages[0],student);const photo=photoFor(student);for(let i=1;i<pages.length;i++){drawHeader(pages[i],student,set);if(i===1)await drawPhoto(pages[i],photo,doc);for(const [header,pageNo,box] of cfg.results){if(pageNo===i+1){const val=clean(getFieldValue(student.raw,header));writeTransparent(pages[i],box,val,{size:12,center:true});}}const sig=signaturePositions(kind,i+1);const formattedDate=set.date?fmtDate(set.date):'';const dateText=[set.signatureCity,formattedDate].filter(Boolean).join(', ');if(dateText)drawStyledText(pages[i],dateText,sig.date.x,sig.date.y,Math.max(sig.date.w,190),sig.date.size,COLORS.orange,sig.date.align,{...sig.date,fit:false,underline:false});const teacher=clean(set.teacher)||student.teacher;if(teacher)drawStyledText(pages[i],teacher,sig.teacher.x,sig.teacher.y,sig.teacher.w,sig.teacher.size,COLORS.orange,sig.teacher.align,sig.teacher);
     if(set.principal){
-      if(sig.principal.digitalEnabled&&state.principalSignature?.file){
-        const sigImg=await embedSignatureImage(doc,state.principalSignature.file);
+      if(sig.principal.digitalEnabled){
+        const sigImg=state.principalSignature?.file
+          ? await embedSignatureImage(doc,state.principalSignature.file)
+          : await embedDefaultSignature(doc);
         await drawDigitalSignature(pages[i],sigImg,sig.principal.digital);
       }
       drawStyledText(pages[i],set.principal,sig.principal.x,sig.principal.y,sig.principal.w,sig.principal.size,COLORS.orange,sig.principal.align,sig.principal);
     }}
-const note=clean(student.note);if(note){const p=pages[pages.length-1];const b=noteBox(kind,pages.length-1);writeTransparent(p,b,note,{size:10.5});}return new Blob([await doc.save()],{type:'application/pdf'});}
+const note=clean(student.note);if(note){const p=pages[pages.length-1];const b=noteBox(kind,pages.length-1);writeCenteredNote(p,b,note,10.5);}return new Blob([await doc.save()],{type:'application/pdf'});}
 
 function openGenerationModal(total,title='Sedang membuat rapor',sub='Menyiapkan dokumen siswa satu per satu.'){
   const modal=$('generationModal');
@@ -1250,6 +1254,8 @@ $('manualPhotoBtn').onclick=()=>{if(state.selected)chooseManualPhoto(state.selec
 $('manualPhotoInput').onchange=async e=>{
   const f=e.target.files[0];
   if(!f||!state.selected)return;
+  updatePhotoProgress(0,1,'Memproses foto siswa…');
+  $('photoInfo').textContent=`Memproses foto ${state.selected.name}…`;
   try {
     const pngBytes=await imageFileToPng(f);
     const thumbnailBlob=new Blob([pngBytes],{type:'image/png'});
@@ -1262,10 +1268,12 @@ $('manualPhotoInput').onchange=async e=>{
     updateSelectionUI();
     $('photoInfo').textContent=`✓ Foto manual untuk ${state.selected.name}`;
     $('photoInfo').classList.add('ok');
+    updatePhotoProgress(1,1,`Selesai · Foto ${state.selected.name} siap`);
     renderStudents();
     refreshPreview(state.selected);
   } catch(error) {
     console.error('Gagal memproses foto manual:',error);
+    updatePhotoProgress(1,1,'Foto gagal diproses');
     showMsg(error.message||'Foto tidak dapat diproses.','error');
   } finally {
     e.target.value='';

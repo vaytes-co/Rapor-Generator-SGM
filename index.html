@@ -83,8 +83,8 @@
           <div class="section-title"><b>Jenis rapor</b><span>Pilih satu</span></div>
           <div class="type-grid">
             <button class="type-card active" data-type="glow"><span class="check">✓</span><b>Glow</b><small>Lower · Middle · Upper</small></button>
-            <button class="type-card" data-type="sunny"><span class="check">✓</span><b>Sunny</b><small>Sheet RAPOT SUNNY</small></button>
-            <button class="type-card" data-type="infant"><span class="check">✓</span><b>Infant</b><small>Template + Excel</small></button>
+            <button class="type-card" data-type="sunny"><span class="check">✓</span><b>Sunny</b><small>RAPOT SUNNY</small></button>
+            <button class="type-card" data-type="infant"><span class="check">✓</span><b>Infant</b><small>Rapot</small></button>
           </div>
           <div class="subtypes show" id="glowLevels"><div class="sub-label">LEVEL GLOW</div><div class="seg"><button class="active" data-level="lower">Lower</button><button data-level="middle">Middle</button><button data-level="upper">Upper</button></div></div>
         </section>
@@ -107,6 +107,11 @@
             <input id="photoFilesInput" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.bmp,.avif" multiple hidden>
           </div>
           <div class="file-info" id="photoInfo">Belum ada foto.</div>
+          <div class="photo-progress" id="photoProgress" hidden aria-live="polite">
+            <div class="photo-progress-top"><span id="photoProgressLabel">Menyiapkan foto…</span><b id="photoProgressPercent">0%</b></div>
+            <div class="photo-progress-track"><div id="photoProgressBar" class="photo-progress-bar" style="width:0%"></div></div>
+            <small id="photoProgressCount">0 dari 0 foto</small>
+          </div>
           <div class="note"><b>Tips:</b> gunakan nama file foto yang sama persis dengan nama lengkap siswa. Foto yang belum cocok bisa ditambahkan manual dari daftar siswa.</div>
         </section>
 

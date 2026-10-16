@@ -2863,3 +2863,36 @@ body.modal-open {
 .photo-position-heading b { font-size: 13px; }
 .photo-position-heading span { color: var(--muted, #6b7280); font-size: 12px; }
 .photo-position-fields { margin-top: 8px; }
+
+
+/* Progress unggah dan pemrosesan foto siswa */
+.photo-progress { margin-top: 10px; padding: 12px 14px; border: 1px solid var(--border, #e5e7eb); border-radius: 12px; background: var(--surface, #fff); }
+.photo-progress[hidden] { display: none !important; }
+.photo-progress-top { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:12px; margin-bottom:8px; }
+.photo-progress-top b { font-variant-numeric:tabular-nums; }
+.photo-progress-track { height:8px; overflow:hidden; border-radius:999px; background:var(--border, #e5e7eb); }
+.photo-progress-bar { height:100%; width:0; border-radius:inherit; background:var(--accent, #f59e0b); transition:width .18s ease; }
+.photo-progress small { display:block; margin-top:7px; color:var(--muted, #6b7280); font-size:11px; }
+
+/* Popup progress upload foto */
+.photo-progress:not([hidden]) {
+  position: fixed;
+  z-index: 12000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(420px, calc(100vw - 32px));
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  background: var(--surface, #fff);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, .24), 0 0 0 100vmax rgba(15, 23, 42, .38);
+  animation: photoProgressIn .18s ease-out;
+}
+.photo-progress-top { font-size: 13px; }
+.photo-progress-track { height: 10px; }
+.photo-progress-bar { background: var(--accent, #f59e0b); }
+.photo-progress.is-complete .photo-progress-bar { background: #16a34a; }
+@keyframes photoProgressIn { from { opacity: 0; transform: translate(-50%, -46%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+@media (prefers-reduced-motion: reduce) { .photo-progress:not([hidden]) { animation: none; } }
