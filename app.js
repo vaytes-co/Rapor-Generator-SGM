@@ -429,7 +429,7 @@ const SUNNY={sheet:'RAPOT SUNNY',key:'sunny',fields:{name:'Nama Anak',displayNam
   ['Perkembangan Kognitif: \nSensorial',2,{x:490.9,y:505.8,w:90.9,h:17}],['Perkembangan Kognitif: \nPembentukan Konsep',2,{x:490.9,y:540.2,w:90.9,h:16.9}],['Perkembangan Kognitif: \nKoordinasi Mata dan Tangan',2,{x:490.9,y:574.6,w:90.9,h:22.8}],['Bahasa: \nMendengar',2,{x:203.4,y:633.6,w:90.7,h:20.4}],['Bahasa: \nMerespon',2,{x:203.4,y:672.5,w:90.7,h:19.3}],['Bahasa: \nKomunikasi Dua Arah',2,{x:203.4,y:707.7,w:90.7,h:19.9}]
 ]};
 
-const INFANT={sheet:'FEB',key:'infant',fields:{name:'Nama Anak',displayName:'Nama Anak\n(Daftar Penilaian)',gender:'Jenis Kelamin',place:'Tempat',birth:'Tanggal Lahir',father:'Nama Ayah',mother:'Nama Ibu',job:'Pekerjaan',address:'Alamat',phone:'No Telp',note:'CATATAN',teacher:'NAMA GURU'},results:[
+const INFANT={sheet:'RAPOT INFANT',key:'infant',fields:{name:'Nama Anak',displayName:'Nama Anak\n(Daftar Penilaian)',gender:'Jenis Kelamin',place:'Tempat',birth:'Tanggal Lahir',father:'Nama Ayah',mother:'Nama Ibu',job:'Pekerjaan',address:'Alamat',phone:'No Telp',note:'CATATAN',teacher:'NAMA GURU'},results:[
   ['Psikomotor (keseimbangan)',2,{x:397.4,y:343.9,w:169,h:18.8}],['Perkembangan kognitif (Koordinasi Mata & Tangan)',2,{x:397.8,y:471.9,w:169,h:22.3}],['Perkembangan Sensorial (Eksploral Sensorial)',2,{x:397.4,y:539.3,w:169,h:23.6}],['Sosial Emosional (kesadaran diri dan Emosi)',2,{x:397.4,y:581.2,w:169,h:23.9}],['Sosial Emosional (interaksi)',2,{x:397.8,y:646.4,w:169,h:18.4}],['Mendengar',2,{x:397.8,y:683.1,w:169,h:18.3}],['Merespon',2,{x:397.4,y:405.7,w:169,h:21.8}]
 ]};
 
@@ -541,7 +541,23 @@ function photoFor(student){
 }
 function parseRows(ws){return XLSX.utils.sheet_to_json(ws,{defval:'',raw:true});}
 function getFieldValue(row,header){if(Object.prototype.hasOwnProperty.call(row,header))return row[header];const target=norm(header);const key=Object.keys(row).find(k=>norm(k)===target);return key?row[key]:'';}
-function findWorksheet(cfg){const direct=state.workbook.Sheets[cfg.sheet];if(direct)return direct;const wanted=Object.values(cfg.fields).slice(0,10).map(norm);let best=null,bestScore=-1;for(const name of state.workbook.SheetNames){const ws=state.workbook.Sheets[name];const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});const header=(rows[0]||[]).map(norm);const score=wanted.filter(x=>x&&header.includes(x)).length;if(score>bestScore){bestScore=score;best=ws;}}if(bestScore>=2)return best;return null;}
+function findWorksheet(cfg){
+  // Sunny dan Infant wajib membaca hasil final langsung dari sheet rapor,
+  // bukan fallback ke DAFTAR atau MONITORING HARIAN. Glow tidak diubah.
+  const direct=state.workbook.Sheets[cfg.sheet];
+  if(direct)return direct;
+  if(cfg.key==='sunny'||cfg.key==='infant')return null;
+  const wanted=Object.values(cfg.fields).slice(0,10).map(norm);
+  let best=null,bestScore=-1;
+  for(const name of state.workbook.SheetNames){
+    const ws=state.workbook.Sheets[name];
+    const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});
+    const header=(rows[0]||[]).map(norm);
+    const score=wanted.filter(x=>x&&header.includes(x)).length;
+    if(score>bestScore){bestScore=score;best=ws;}
+  }
+  return bestScore>=2?best:null;
+}
 function parseWorkbook(){if(!state.workbook)return;if(!window.XLSX){showMsg('Library Excel belum termuat.','error');return;}const cfg=state.type==='sunny'?SUNNY:state.type==='infant'?INFANT:CONFIG[state.level];const ws=findWorksheet(cfg);if(!ws){showMsg(`Sheet data untuk ${state.type==='sunny'?'Sunny':state.type==='infant'?'Infant':state.level} tidak ditemukan.`,'error');return;}const rows=parseRows(ws);state.students=rows.filter(r=>clean(getFieldValue(r,cfg.fields.name))).map((r,index)=>{const obj={raw:r,index,id:`${state.type}-${state.level}-${index}`};for(const [k,h] of Object.entries(cfg.fields))obj[k]=getFieldValue(r,h);obj.name=clean(obj.name);obj.displayName=clean(obj.displayName);obj.note=clean(obj.note);obj.teacher=clean(obj.teacher);return obj;});state.selected=state.students[0]||null;state.generated.clear();state.reportsReady=false;state.manualPhotos.clear();state.checked.clear();updateTeacherFilter();updateUI();}
 function expectedTemplateLabel(){if(state.type==='sunny')return 'Sunny';if(state.type==='infant')return 'Infant';return `Glow ${state.level[0].toUpperCase()+state.level.slice(1)}`;}
 function detectWorkbookTemplate(wb){
@@ -554,7 +570,7 @@ function detectWorkbookTemplate(wb){
     {label:'Sunny',keys:['rapotsunny','sunny']},
     {label:'Infant',keys:['feb','infant']}
   ];
-  for(const item of known){if(normNames.some(x=>item.keys.includes(x.n)))return item.label;}
+  for(const item of known){if(normNames.some(x=>item.keys.some(k=>x.n===k||x.n.includes(k))))return item.label;}
   // Fallback: inspect headers when sheet names are custom/renamed.
   const signatures=[
     {label:'Sunny',terms:['latihan kecakapan hidup','komunikasi dua arah','pembentukan konsep']},
