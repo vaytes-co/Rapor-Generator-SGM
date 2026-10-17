@@ -539,8 +539,48 @@ function photoFor(student){
   if(second && Math.abs(best.score-second.score)<0.03 && best.key!==second.key)return null;
   return best.val;
 }
-function parseRows(ws){return XLSX.utils.sheet_to_json(ws,{defval:'',raw:true});}
-function getFieldValue(row,header){if(Object.prototype.hasOwnProperty.call(row,header))return row[header];const target=norm(header);const key=Object.keys(row).find(k=>norm(k)===target);return key?row[key]:'';}
+function parseRows(ws){
+  // Glow tetap menggunakan parser yang sebelumnya sudah sesuai.
+  if(state.type!=='sunny'&&state.type!=='infant'){
+    return XLSX.utils.sheet_to_json(ws,{defval:'',raw:true});
+  }
+  // Sunny/Infant: bangun record langsung dari baris header dan kolom asli sheet RAPOT.
+  // Ini menghindari salah-pasangan nilai jika Excel punya baris kosong, line break,
+  // atau variasi spasi pada judul kolom.
+  const matrix=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true,blankrows:true});
+  const headerIndex=matrix.findIndex(row=>
+    Array.isArray(row)&&row.some(cell=>norm(cell)==='namaanak')&&
+    row.filter(cell=>clean(cell)!=='').length>=5
+  );
+  if(headerIndex<0)return [];
+  const headers=matrix[headerIndex].map((h,i)=>clean(h)||`__EMPTY_${i}`);
+  const records=[];
+  for(let r=headerIndex+1;r<matrix.length;r++){
+    const values=matrix[r]||[];
+    if(!values.some(v=>clean(v)!==''))continue;
+    const record={};
+    for(let c=0;c<headers.length;c++){
+      const key=headers[c];
+      // Header yang benar-benar duplikat diberi suffix, tidak menimpa kolom sebelumnya.
+      let finalKey=key, suffix=2;
+      while(Object.prototype.hasOwnProperty.call(record,finalKey))finalKey=`${key}__${suffix++}`;
+      record[finalKey]=values[c]===undefined?'':values[c];
+    }
+    records.push(record);
+  }
+  return records;
+}
+function getFieldValue(row,header){
+  if(Object.prototype.hasOwnProperty.call(row,header))return row[header];
+  const target=norm(header);
+  const keys=Object.keys(row);
+  // Exact normalized match first.
+  const key=keys.find(k=>norm(k)===target);
+  if(key)return row[key];
+  // Fallback only when the normalized header match is unambiguous.
+  const matches=keys.filter(k=>norm(k.replace(/__\\d+$/,''))===target);
+  return matches.length===1?row[matches[0]]:'';
+}
 function findWorksheet(cfg){
   // Sunny dan Infant wajib membaca hasil final langsung dari sheet rapor,
   // bukan fallback ke DAFTAR atau MONITORING HARIAN. Glow tidak diubah.
