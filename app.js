@@ -425,8 +425,22 @@ const CONFIG={
 };
 
 const SUNNY={sheet:'RAPOT SUNNY',key:'sunny',fields:{name:'Nama Anak',displayName:'Nama Anak\n(Daftar Penilaian)',gender:'Jenis Kelamin',place:'Tempat',birth:'Tanggal Lahir',father:'Nama Ayah',mother:'Nama Ibu',job:'Pekerjaan',address:'Alamat',phone:'No Telp',note:'Catatan Keseluruhan',teacher:'NAMA GURU'},results:[
-  ['Psikomotorik: Keseimbangan & Kasar',2,{x:205.1,y:364.3,w:89,h:24.8}],['Psikomotorik: Halus',2,{x:205.1,y:405,w:89,h:23.6}],['Sosial Emosional :\nKesadaran Diri',2,{x:205.1,y:487.2,w:89,h:16}],['Sosial Emosional:\nInteraksi',2,{x:205.1,y:521.7,w:89,h:16.1}],['Sosial Emosional:\nEmosional',2,{x:205.1,y:553.7,w:89,h:24}],['Latihan Kecakapan Hidup:\nPerawatan Diri',2,{x:490.9,y:365.3,w:95.5,h:15.9}],['Latihan Kecakapan Hidup: \nPerawatan Lingkungan',2,{x:490.9,y:397.1,w:95.5,h:16.9}],['Latihan Kecakapan Hidup: \nKolaborasi dengan orang dewasa',2,{x:490.9,y:429.9,w:95.5,h:24.1}],
-  ['Perkembangan Kognitif: \nSensorial',2,{x:490.9,y:505.8,w:90.9,h:17}],['Perkembangan Kognitif: \nPembentukan Konsep',2,{x:490.9,y:540.2,w:90.9,h:16.9}],['Perkembangan Kognitif: \nKoordinasi Mata dan Tangan',2,{x:490.9,y:574.6,w:90.9,h:22.8}],['Bahasa: \nMendengar',2,{x:203.4,y:633.6,w:90.7,h:20.4}],['Bahasa: \nMerespon',2,{x:203.4,y:672.5,w:90.7,h:19.3}],['Bahasa: \nKomunikasi Dua Arah',2,{x:203.4,y:707.7,w:90.7,h:19.9}]
+  // Kolom kiri: Psikomotorik, Latihan Kecakapan Hidup, Perkembangan Kognitif
+  ['Psikomotorik: Keseimbangan & Kasar',2,{x:205.1,y:364.3,w:89,h:24.8}],
+  ['Psikomotorik: Halus',2,{x:205.1,y:405,w:89,h:23.6}],
+  ['Sosial Emosional :\nKesadaran Diri',2,{x:490.9,y:364.3,w:95.5,h:16}],
+  ['Sosial Emosional:\nInteraksi',2,{x:490.9,y:397.1,w:95.5,h:16.1}],
+  ['Sosial Emosional:\nEmosional',2,{x:490.9,y:433.2,w:95.5,h:24}],
+  ['Latihan Kecakapan Hidup:\nPerawatan Diri',2,{x:205.1,y:487.2,w:89,h:15.9}],
+  ['Latihan Kecakapan Hidup: \nPerawatan Lingkungan',2,{x:205.1,y:521.7,w:89,h:16.9}],
+  ['Latihan Kecakapan Hidup: \nKolaborasi dengan orang dewasa',2,{x:205.1,y:553.7,w:89,h:24.1}],
+  ['Perkembangan Kognitif: \nSensorial',2,{x:205.1,y:635.8,w:89,h:17}],
+  ['Perkembangan Kognitif: \nPembentukan Konsep',2,{x:205.1,y:674.1,w:89,h:16.9}],
+  ['Perkembangan Kognitif: \nKoordinasi Mata dan Tangan',2,{x:205.1,y:707.6,w:89,h:22.8}],
+  // Kolom kanan: Bahasa
+  ['Bahasa: \nMendengar',2,{x:490.9,y:505.8,w:95.5,h:20.4}],
+  ['Bahasa: \nMerespon',2,{x:490.9,y:539.2,w:95.5,h:19.3}],
+  ['Bahasa: \nKomunikasi Dua Arah',2,{x:490.9,y:575.7,w:95.5,h:19.9}]
 ]};
 
 const INFANT={sheet:'RAPOT INFANT',key:'infant',fields:{name:'Nama Anak',displayName:'Nama Anak\n(Daftar Penilaian)',gender:'Jenis Kelamin',place:'Tempat',birth:'Tanggal Lahir',father:'Nama Ayah',mother:'Nama Ibu',job:'Pekerjaan',address:'Alamat',phone:'No Telp',note:'CATATAN',teacher:'NAMA GURU'},results:[
