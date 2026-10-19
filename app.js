@@ -451,7 +451,36 @@ const templateCache=new Map();let fonts={};let previewUrl=null;let busy=false;
 const $=id=>document.getElementById(id);const clean=v=>{if(v===null||v===undefined)return '';const s=String(v).trim();return /^#(VALUE|REF|DIV\/0|N\/A|NAME|NUM|NULL)!?$/i.test(s)?'':s;};
 function norm(s){return clean(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\.[^.]+$/,'').replace(/[^a-z0-9]+/g,'');}
 function initial(name){return clean(name).split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase()||'?';}
-function fmtDate(v){if(!v)return '';if(v instanceof Date&&!Number.isNaN(v.getTime()))return new Intl.DateTimeFormat('id-ID',{day:'2-digit',month:'long',year:'numeric'}).format(v);const s=clean(v);if(/^\d{4}-\d{2}-\d{2}$/.test(s)){const d=new Date(s+'T00:00:00');return new Intl.DateTimeFormat('id-ID',{day:'2-digit',month:'long',year:'numeric'}).format(d);}return s;}
+function fmtDate(v){
+  if(v===null||v===undefined||v==='')return '';
+  const format=d=>new Intl.DateTimeFormat('id-ID',{day:'2-digit',month:'long',year:'numeric',timeZone:'UTC'}).format(d);
+  if(v instanceof Date&&!Number.isNaN(v.getTime()))return format(new Date(Date.UTC(v.getFullYear(),v.getMonth(),v.getDate(),12)));
+  // Excel menyimpan tanggal sebagai serial number; raw:true membuatnya terbaca angka.
+  if(typeof v==='number'&&Number.isFinite(v)&&v>0&&window.XLSX?.SSF?.parse_date_code){
+    const parts=window.XLSX.SSF.parse_date_code(v);
+    if(parts&&parts.y&&parts.m&&parts.d)return format(new Date(Date.UTC(parts.y,parts.m-1,parts.d,12)));
+  }
+  const s=clean(v);
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)){const [y,m,d]=s.split('-').map(Number);return format(new Date(Date.UTC(y,m-1,d,12)));}
+  // Format tanggal umum dd/mm/yyyy atau d-m-yyyy tanpa menebak format lain.
+  const match=s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+  if(match){const day=Number(match[1]),month=Number(match[2]),year=Number(match[3]);if(day>=1&&day<=31&&month>=1&&month<=12)return format(new Date(Date.UTC(year,month-1,day,12)));}
+  return s;
+}
+function normalizePhone(v){
+  if(v===null||v===undefined||v==='')return '';
+  let s=String(v).trim();
+  if(!s)return '';
+  // Hilangkan akhiran desimal .0 yang kadang muncul dari nomor numerik Excel.
+  if(/^\d+\.0+$/.test(s))s=s.replace(/\.0+$/,'');
+  const digits=s.replace(/\D/g,'');
+  if(!digits)return s;
+  // Nomor Indonesia yang ditulis dengan kode negara 62 dikonversi ke format lokal 0.
+  if(digits.startsWith('62')&&digits.length>=10&&digits.length<=15)return '0'+digits.slice(2);
+  // Jika Excel menghilangkan angka nol di depan, tambahkan kembali agar tidak dianggap invalid.
+  if(!digits.startsWith('0'))return '0'+digits;
+  return digits;
+}
 function currentDate(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function showMsg(text,type='info'){const el=$('message');el.textContent=text;el.className='notice show '+type;}function clearMsg(){$('message').className='notice';$('message').textContent='';}
 function safeFile(s){return clean(s).replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,100)||'Siswa';}function escapeHtml(s){return clean(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -612,7 +641,7 @@ function findWorksheet(cfg){
   }
   return bestScore>=2?best:null;
 }
-function parseWorkbook(){if(!state.workbook)return;if(!window.XLSX){showMsg('Library Excel belum termuat.','error');return;}const cfg=state.type==='sunny'?SUNNY:state.type==='infant'?INFANT:CONFIG[state.level];const ws=findWorksheet(cfg);if(!ws){showMsg(`Sheet data untuk ${state.type==='sunny'?'Sunny':state.type==='infant'?'Infant':state.level} tidak ditemukan.`,'error');return;}const rows=parseRows(ws);state.students=rows.filter(r=>clean(getFieldValue(r,cfg.fields.name))).map((r,index)=>{const obj={raw:r,index,id:`${state.type}-${state.level}-${index}`};for(const [k,h] of Object.entries(cfg.fields))obj[k]=getFieldValue(r,h);obj.name=clean(obj.name);obj.displayName=clean(obj.displayName);obj.note=clean(obj.note);obj.teacher=clean(obj.teacher);return obj;});state.selected=state.students[0]||null;state.generated.clear();state.reportsReady=false;state.manualPhotos.clear();state.checked.clear();updateTeacherFilter();updateUI();}
+function parseWorkbook(){if(!state.workbook)return;if(!window.XLSX){showMsg('Library Excel belum termuat.','error');return;}const cfg=state.type==='sunny'?SUNNY:state.type==='infant'?INFANT:CONFIG[state.level];const ws=findWorksheet(cfg);if(!ws){showMsg(`Sheet data untuk ${state.type==='sunny'?'Sunny':state.type==='infant'?'Infant':state.level} tidak ditemukan.`,'error');return;}const rows=parseRows(ws);state.students=rows.filter(r=>clean(getFieldValue(r,cfg.fields.name))).map((r,index)=>{const obj={raw:r,index,id:`${state.type}-${state.level}-${index}`};for(const [k,h] of Object.entries(cfg.fields))obj[k]=getFieldValue(r,h);obj.name=clean(obj.name);obj.displayName=clean(obj.displayName);obj.note=clean(obj.note);obj.teacher=clean(obj.teacher);obj.phone=normalizePhone(obj.phone);return obj;});state.selected=state.students[0]||null;state.generated.clear();state.reportsReady=false;state.manualPhotos.clear();state.checked.clear();updateTeacherFilter();updateUI();}
 function expectedTemplateLabel(){if(state.type==='sunny')return 'Sunny';if(state.type==='infant')return 'Infant';return `Glow ${state.level[0].toUpperCase()+state.level.slice(1)}`;}
 function detectWorkbookTemplate(wb){
   const names=wb?.SheetNames||[];
@@ -656,7 +685,7 @@ async function loadExcel(file){
   $('excelInfo').textContent=`Memeriksa ${file.name}…`;
   try{
     const buf=await file.arrayBuffer();
-    const wb=XLSX.read(buf,{type:'array',cellDates:true});
+    const wb=XLSX.read(buf,{type:'array',cellDates:false});
     const expected=expectedTemplateLabel();
     const detected=detectWorkbookTemplate(wb);
     if(detected && detected!==expected){
@@ -1104,7 +1133,7 @@ function noteBox(kind,pageIndex){
   }
 
   if(kind==='sunny'){
-    return {x:299.8,y:634,w:294.8,h:106};
+    return {x:299.8,y:631,w:294.8,h:106};
   }
 
   // Glow Middle
